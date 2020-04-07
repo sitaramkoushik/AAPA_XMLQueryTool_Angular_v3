@@ -1,0 +1,35 @@
+<div class="row login-main-container">
+    <div class="d-block col-12">
+        <div class="login-sec">
+            <div class="row">
+                <div class="col-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading pl-0">
+                            <h3 class="panel-title"><strong>Login </strong></h3>
+                        </div>
+                        <div class="panel-body">
+                            <p class="alert alert-warning text-center" *ngIf="isInvalid">{{errorMsg}}</p>
+                            <form role="form" (submit)="login()">
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1"><span class="error">* </span>Username </label>
+                                    <input type="text" autofocus class="form-control rounded-0" id="exampleInputEmail1"
+                                        placeholder="Enter Username" name="loginEmail" [(ngModel)]="userName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1"> <span class="error">* </span>Password</label>
+                                    <input type="password" class="form-control rounded-0" id="exampleInputPassword1"
+                                        placeholder="Password" name="loginPassword" [(ngModel)]="password" required>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 col-xs-6 mt-2">
+                                        <button type="submit" class="btn btn-primary rounded-0">Sign in</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

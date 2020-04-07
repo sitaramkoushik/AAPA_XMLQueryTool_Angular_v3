@@ -1,0 +1,681 @@
+<div class="row page-container" #pageContainer>
+    <div class="header-parent col-12 p-0" >
+        <div class="alt-header col-12" (mouseover)="toggleFilters2()" >
+            <div class="p-0 d-flex justify-content-between align-items-center alt-header-sub">
+                <label class="p-0 m-0 font-weight-bold">{{rowCount | number: '2.'}} Record(s)
+                </label>
+                <div class="d-flex align-items-center">
+                        <div class="pr-3">{{userName}}</div>
+                    <button class="logout-btn mr-2" title="logout" (click)="signOut()"></button>
+                    <span class="dots-icon" >
+                       <!-- <button class="btn bg-transparent p-0" (click)="toggleFilters()"></button>-->
+                       <button _ngcontent-c1="" class="btn bg-transparent p-0" (click)="toggleFilters1()">
+                           <i _ngcontent-c1="" class="fa fa-thumbtack"></i>
+                        </button>
+                       <!--<button class="btn bg-transparent p-0"  (click)="toggleFilters1()">
+                            <img src="./assets/images/non_stick.png" width="19" height="15">
+                        </button>-->
+                    </span>
+                 </div>
+            </div>
+        </div>
+        <div class="header col-12 form-horizontal p-0" (mouseover)="toggleFilters3()" (mouseout)="toggleFilters4()">
+            <div class="search-top">
+                <div class="d-flex justify-content-between align-items-center" >
+                    <div class="page-title">
+                        <span>XML Query Tool</span>
+
+                        <label class="p-0 text-left font-weight-bold d-block">{{rowCount | number: '2.'}} Record(s)
+                        </label>
+                    </div>
+                    <div class="d-flex right-side-content">
+                        <div class="right-side-bottom">
+                            <div class="">
+                                <div class="col-sm-offset-1">
+                                    <ng-select [items]="envData" [searchable]="false" [clearable]="false"
+                                    [(ngModel)]="queryObj['params']['env']" bindValue="value"
+                                    (change)="onChangePlace($event)"
+                                    >
+                                    </ng-select>
+                                </div>
+                            </div>
+                            <div class="">
+                                <div class="col-sm-offset-1">
+                                    <button class="btn bg-transparent btn-link ml-3 p-0 export-btn"  title="Export" (click)="exportRecords(ExportModelContent)">
+                                        <img src="./assets/images/export.svg" width="19" height="15">
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="pl-3 pr-2">
+                                <a href="#" class="settings-btn" title="Settings" (click)="openOptions(optionsContent)"></a>
+                            </div>
+                            <div class="pr-3 userName">{{userName}}</div>
+                    <button class="logout-btn mr-2" title="logout" (click)="signOut()"></button>
+
+                        </div>
+                        <span class="dots-icon d-flex justify-content-between" >
+                                <button _ngcontent-c1="" class="btn bg-transparent p-0 " (click)="toggleFilters1()" #sticky>
+                                    <i _ngcontent-c1="" class="fa fa-thumbtack"></i>
+                                </button>
+                            <!--<button class="btn bg-transparent p-0" > sticked text-primary
+                                <img src="./assets/images/stick.png" width="19" height="15">
+                            </button>-->
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="search-bottom">
+                <div class="row m-0 justify-content-between">
+                    <div class="pl-0 search-input-container">
+                        <label class="col-md-2 control-label pl-1">Search</label>
+                        <div class="col-md-12 pl-1 pr-2">
+                            <input type="text" autofocus list="autoFillQueryData" [(ngModel)]="queryObj.params.searchKey" (keyup)="searchKeyEvent($event)"
+                                class="form-control search-input" name="advSearchKey" autocomplete="off" />
+                            <datalist id="autoFillQueryData">
+                                <option *ngFor="let item of autoFillQueryData">{{item}}</option>
+                            </datalist>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="form-group">
+                            <label style="text-align:left" class="col-sm-12 control-label pl-2 pr-2">Search By</label>
+                            <div class="col-sm-12  pl-2 pr-2">
+                                <!-- <ng-select [searchable]="false" [items]="queryTypeData" (change)="onChangeWd($event,wdModal)" (click)="clicked($event,wdModal)"  [clearable]="false" [(ngModel)]="selectedValue" bindValue="value">
+                                </ng-select> -->
+
+
+                                <p-dropdown [options]="queryTypeData" class="ui-inputtext page-container ui-widget"  (onHide)="onFocusWd($event,wdModal)" (onChange)="onChangeWd($event,wdModal)" [(ngModel)]="selectedValue"></p-dropdown>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-inline-block actionby-dropdown">
+                        <div class="form-group">
+                            <label class="col-sm-12 control-label  pl-2 pr-2">Action By</label>
+                            <div class="col-sm-12  pl-2 pr-2">
+                                <ng-select [items]="actionData" [(ngModel)]="selectedAction" [multiple]="true" bindValue="value" [closeOnSelect]="false"
+                                    [searchable]="false" (change)="onActionChange($event)">
+                                    <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                                        <div class="ng-value" *ngFor="let item of (items.length==1 ? items : [])">
+                                            <span class="ng-value-label">{{item.label}}</span>
+                                            <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                                        </div>
+                                        <div class="ng-value" *ngIf="items.length > 1">
+                                            <span class="ng-value-label">{{items.length}} more...</span>
+                                        </div>
+                                    </ng-template>
+                                </ng-select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-inline-block pl-2 pr-2">
+                        <div class="form-group">
+                            <label class="col-sm-12 control-label  pl-2 pr-2">From Date</label>
+                            <div class="">
+                                <div class="input-group date">
+                                    <input class="form-control" placeholder="MM/DD/YYYY" name="ds" [(ngModel)]="startDate" ngbDatepicker #ds="ngbDatepicker"
+                                        (focus)="ds.toggle()" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-inline-block pl-2 pr-2">
+                        <div class="form-group">
+                            <label class="col-sm-12 control-label  pl-2 pr-2">To Date</label>
+                            <div class="">
+                                <div class="input-group date">
+                                    <input class="form-control" placeholder="MM/DD/YYYY" name="de" [(ngModel)]="endDate" ngbDatepicker #de="ngbDatepicker"
+                                        (focus)="de.toggle()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-inline-block pl-2 pr-2 btn-container">
+                        <div class="form-group">
+                            <div class="d-flex justify-content-between">
+                                <button class="theme-btn mr-2" (click)="clearFilters()">Clear</button>
+                                <button class="theme-btn mr-2" (click)="openHelp(helpContent)">Help</button>
+                                <button class="theme-btn1" (click)="reSearch()">Go</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div [class]="visibleColumnsLength<=16?'col-12 p-0 no-scroll-table':'col-12 p-0'">
+        <ngx-datatable #xmlTable class="material xml-query-tool" [rows]="rows" [count]="rowCount" [externalPaging]="true" [rowHeight]="'auto'"
+            [reorderable]="true" columnMode="force" [headerHeight]="50" [footerHeight]="0" [virtualization]="false" [scrollbarH]="true"
+            [messages]="tableMessages" (reorder)="onReorder()" (resize)="onReorder()">
+            <ngx-datatable-column name="" sortable="false" prop="id" [width]="105">
+                <ng-template let-row="data" let-value="value" ngx-datatable-cell-template>
+                        <button class="cell-btn bg-transparent mr-1 mb-1" (click)="dataOpen(value,columnDataContent)">D</button>
+                        <button class="cell-btn bg-transparent mr-1 mb-1" (click)="reqRespOpen(value,reqrespContent)">R</button>
+                        <button class="cell-btn bg-transparent mb-1" (click)="OpenRequestResponse(value,reqrespXmlContent,true)">RE</button>
+                </ng-template>
+            </ngx-datatable-column>
+            <ng-container *ngFor="let column of visibleColumns">
+                <ngx-datatable-column *ngIf="column.visible"
+                [name]="column.name" [prop]="column.prop" [width]="column.width" [sortable]="false">
+                    <ng-template let-value="value" ngx-datatable-cell-template *ngIf="column.name!='created';else createdTableColumn">
+                        {{value}}
+                    </ng-template>
+                    <ng-template let-value="value" ngx-datatable-cell-template #createdTableColumn>
+                        {{value | browserTimeFormatter:timeFormat}}
+                    </ng-template>
+                </ngx-datatable-column>
+            </ng-container>
+        </ngx-datatable>
+        <div class="loader-wrapper" *ngIf="loadingIndicator">
+            <div class="lds-dual-ring"></div>
+        </div>
+    </div>
+</div>
+<!-- helpContent modal -->
+<ng-template #helpContent let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4>Help</h4>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div>
+            <p> You can use the search box in two ways. If you select "Search By" drop down and select any field the text in
+                the search box would be a normal string. If you don't select the "Search By" drop down and leave it empty,
+                the same search box can be used to search all fields (with the input string) and advanced querying using
+                lucene syntax.
+            </p>
+            <p>
+                Remember that these queries will only work with exact field names which are provided down below:</p>
+            <br />
+            <ul class="help-list">
+                <li>Find all records for orgID 4804 with network Pa
+                    <br />
+                    <i> orgId:4804 AND network:Pa</i>
+                </li>
+
+                <li>Find all records for orgID 4804 or 53982 with network Pa
+                    <br />
+                    <i>orgId:(4804 OR 53982) AND network:Pa</i>
+                </li>
+
+                <li>Find all ORD records created between 14th and 15th July 2015 for screenName aa999jsmith. [] are inclusive
+                    and {{"\{\}"}} are exclusive.
+                    <br />
+                    <i>action:ORD AND created:[2015-07-14 TO 2015-07-15] AND screenName:aa999jsmith</i>
+                </li>
+
+                <li>Find all records whose duration is greater than 60 seconds.(duration is stored in ms)
+                    <br />
+                    <i>duration: >60000</i>
+                </li>
+
+                <li>Find all records whose duration is between 40 and 60 seconds.
+                    <br />
+                    <i>duration:(>=40000 AND
+                        <60000)</i>
+                </li>
+
+                <li>Find all records where any field matches aa999jsmith.
+                    <br />
+                    <i>aa999jsmith</i>
+                </li>
+
+                <li>A common use case scenario would be find errors in a day. You can then see xml req and response to see the
+                    cause of the error.
+                    <br />
+                    <i>NOT(errFlg:0) </i>
+                </li>
+            </ul>
+            <br /> For more possibilities, you can refer to this page:
+            <a>https://www.elastic.co/guide/en/elasticsearch/reference/1.6/query-dsl-query-string-query.html#query-string-syntax</a>
+            <p>
+                <b>The action and Date combo fields can be used in both simple searches and complex queries. The search respects
+                    these filters in both cases.</b>
+            </p>
+            <p>The following fields can be used in the searches.</p>
+            <div class="row fields-list">
+                <div class="col-md-4">
+                    <ul>
+                        <li>
+                            <span>created</span>
+                        </li>
+                        <li>
+                            <span>destcalled</span>
+                        </li>
+                        <li>
+                            <span>destname</span>
+                        </li>
+                        <li>
+                            <span>duration</span>
+                        </li>
+                        <li>
+                            <span>errFlg</span>
+                        </li>
+                        <li>
+                            <span>id</span>
+                        </li>
+                        <li>
+                            <span>laborFlg</span>
+                        </li>
+                        <li>
+                            <span>linecnt</span>
+                        </li>
+                        <li>
+                            <span>netamt</span>
+                        </li>
+                        <li>
+                            <span>network</span>
+                        </li>
+                        <li>
+                            <span>oeFlg</span>
+                        </li>
+                        <li>
+                            <span>ordamt</span>
+                        </li>
+                        <li>
+                            <span>orgCity</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <ul>
+                        <li>
+                            <span>orgCountry</span>
+                        </li>
+                        <li>
+                            <span>orgId</span>
+                        </li>
+                        <li>
+                            <span>orgName</span>
+                        </li>
+                        <li>
+                            <span>orgRegion</span>
+                        </li>
+                        <li>
+                            <span>orgTreePath</span>
+                        </li>
+                        <li>
+                            <span>orgZip</span>
+                        </li>
+                        <li>
+                            <span>orgtype</span>
+                        </li>
+                        <li>
+                            <span>partnerName</span>
+                        </li>
+                        <li>
+                            <span>partnerSellerId</span>
+                        </li>
+                        <li>
+                            <span>scat</span>
+                        </li>
+                        <li>
+                            <span>scatName</span>
+                        </li>
+                        <li>
+                            <span>screenName</span>
+                        </li>
+                        <li>
+                            <span>sellDirect</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <ul>
+                        <li>
+                            <span>seqno</span>
+                        </li>
+                        <li>
+                            <span>server</span>
+                        </li>
+                        <li>
+                            <span>service</span>
+                        </li>
+                        <li>
+                            <span>sindex</span>
+                        </li>
+                        <li>
+                            <span>sindexName</span>
+                        </li>
+                        <li>
+                            <span>stype</span>
+                        </li>
+                        <li>
+                            <span>trans</span>
+                        </li>
+                        <li>
+                            <span>url</span>
+                        </li>
+                        <li>
+                            <span>userid</span>
+                        </li>
+                        <li>
+                            <span>wdName</span>
+                        </li>
+                        <li>
+                            <span>partnerSellerIdCod</span>
+                        </li>
+                        <li>
+                            <span>natAcct</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Help modal end -->
+
+
+
+<!-- wdModal modal -->
+<ng-template #wdModal let-c="close" modalClass=" any-other-css-class"
+ let-d="dismiss">
+    <div class="modal-header ">
+        <h4></h4>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+
+    <div>
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-4">
+                <div class="ui-inputgroup">
+
+                    <input type="text" pInputText placeholder="Search Keyword" [(ngModel)]="valueSearch">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal-body">
+        <div *ngFor = "let name of wdNamesData |filter:valueSearch" >
+            <div class="checkText">
+                    <p-checkbox name="group2" value="{{name.value}}" class="ui-chkbox-label" label="{{name.label}}"   (onChange)="onChangeSelectedWd($event,name)"></p-checkbox>
+                </div>
+         </div>
+    </div>
+
+    <div>
+        <button class="wdSubmit modalButton" (click)="submitWdname()">Submit</button>
+    </div>
+</ng-template>
+
+<!-- wdmodal end -->
+
+<!-- options modal -->
+
+<ng-template #optionsContent let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <span>Select Columns</span>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+            <span aria-hidden="true">
+                <img src="./assets/images/close.svg" width="24" height="24">
+            </span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="form" class="row">
+            <div class="col-4" *ngFor="let column of allAvailableCols">
+                <label class="checkbox-container">
+                    <input type="checkbox" formControlName="{{column}}" />
+                    <span class="checkmark"></span>
+                    <span>{{column}}</span>
+                </label>
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-12">
+                <div class="modal-header ng-scope border-0 pl-0">
+                    <span class="modal-title">Display Time </span>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="">
+                    <p>
+                        Make sure to add timezone offset value for time/date based queries in search field when your display time is other than UTC
+                        time.
+                    </p>
+                    <form [formGroup]="timeForm">
+                        <label class="checkbox-container radio d-flex">
+                            <input type="radio" name="timezone" value="browserTime" formControlName="timezone" id="browserTime">
+                            <span class="mt-1">Browser Time</span>
+                            <span class="checkmark"></span>
+                        </label>
+                        <br>
+                        <label class="checkbox-container radio d-flex">
+                            <input type="radio" name="timezone" formControlName="timezone" value="utcTime" id="utcTime">
+                            <span class="mt-1">UTC Time</span>
+                            <span class="checkmark"></span>
+                        </label>
+                        <br>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="theme-btn1 mr-2" (click)="c('save')">Save</button>
+        <button type="button" class="theme-btn mr-2" (click)="c('reset')">Reset</button>
+        <button type="button" class="theme-btn" (click)="c('cancel')">Cancel</button>
+    </div>
+</ng-template>
+
+<!-- options modal end -->
+<!-- column data modal -->
+
+<ng-template #columnDataContent let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <span>ID: {{selectedColumnID}}</span>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+            <span aria-hidden="true">
+                <img src="./assets/images/close.svg" width="24" height="24">
+            </span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row xmlCustom_alliance">
+            <div class="col-4 id-value-pair" *ngFor="let data of selectedColumnData">
+                <ng-container *ngIf="data[0]!='created';else createdDateField">
+                    <span>{{data[0]}}: </span>
+                    <span>{{data[1]}}</span>
+                </ng-container>
+                <ng-template #createdDateField>
+                    <span>{{data[0]}}: </span>
+                    <span>{{data[1]|browserTimeFormatter:timeFormat}}</span>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<!-- column data modal end -->
+
+<!-- reqresp Modal -->
+
+<ng-template #reqrespContent let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <span>XML Request and Response : {{selectedColumnID}}</span>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+            <span aria-hidden="true">
+                <img src="./assets/images/close.svg" width="24" height="24">
+            </span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-6">
+                <textarea class="d-block w-100 form-control">{{reqResp.req}}</textarea>
+            </div>
+            <div class="col-6">
+                <textarea class="d-block w-100 form-control">{{reqResp.resp}}</textarea>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #ExportModelContent let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <span>Export</span>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+            <span aria-hidden="true">
+                <img src="./assets/images/close.svg" width="24" height="24">
+            </span>
+        </button>
+    </div>
+    <div class="modal-body" >
+        <div class="row" *ngIf="rowCount>0 || exportStatus==101;else NoExportData">
+            <div class="col-12 export-content">
+                <div class="mb-3">
+                    <span>Column to Export </span>
+                </div>
+                <div class="clearfix w-100">
+                    <form class="float-left">
+                        <div class="radio">
+                            <label class="checkbox-container radio">
+                                <input type="radio" [value]="1" [(ngModel)]="optradio" name="optradio">
+                                <span class="checkmark"></span>
+                                <span class="label-name">All Columns</span>
+                            </label>
+
+                        </div>
+                        <div class="radio">
+                                <label class="checkbox-container radio">
+                                        <input type="radio" [value]="2" [(ngModel)]="optradio" name="optradio">
+                                        <span class="checkmark"></span>
+                                        <span class="label-name">Displayed Columns</span>
+                                </label>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="mt-3 clearfix">
+                    <button type="button" class="theme-btn1 active"  *ngIf="displayExportButton;else exportButton" (click)="getExportData()">Export</button>
+                    <ng-template #exportButton>
+                            <button type="button" class="theme-btn1 inactive"  [disabled]='true'>Export</button>
+                    </ng-template>
+                </div>
+
+                <div class="mt-3 clearfix" >
+                        <span> Once you get file link,Please click link to download  </span>
+                </div>
+
+                <div class="mt-3 clearfix" >
+                    <p-progressBar *ngIf="!displayExportButton" [value]="value"></p-progressBar>
+                    <span><a [href]="text">{{text}}</a></span>
+                    <!-- <button *ngIf="(optradio!=undefined && !displayExportButton)" type="button" (click)="stopExporting()">Stop</button> -->
+                </div>
+            </div>
+        </div>
+
+        <ng-template #NoExportData>
+            <div class="row">
+                <span>No Data Found to Export</span>
+            </div>
+        </ng-template>
+
+    </div>
+</ng-template>
+
+
+<ng-template #reqrespXmlContent let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <span>ID : {{selectedColumnID}}</span>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+            <span aria-hidden="true">
+                <img src="./assets/images/close.svg" width="24" height="24">
+            </span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row" *ngIf="!ReloadingIndicator;else showLoader">
+            <div class="col-6">
+                <div class="search-block bg-block d-flex align-items-center ">
+                    <div class="input-group d-flex justify-content-between" id="aui_3_4_0_1_349">
+                        <div class="Search-input d-flex align-items-center" id="aui_3_4_0_1_348">
+
+                            <input type="text" pInputText [(ngModel)]="searchValue" (keyup)="searchRE(searchValue,reqrespXmlContent)" name="searchvalue"
+                                placeholder="Search" class="" />
+                        </div>
+                        <span class="input-group-addon">
+                            <div class="categories-search-button">
+                                <button class="btntype1  {{partNumberActive}}" (click)="SelectSearchKey('partNumber')">Part Number</button>
+                                <button class="btntype2 {{lineCodeActive}}" (click)="SelectSearchKey('lineCode')">Line code</button>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+                <div class="bg-block">
+                    <div class="d-flex align-items-center justify-content-between">
+                    <span class="block-header font-weight-bold">Request</span>
+                    <div class="mr-3">
+
+                            <button pButton type="button" label="Expand all" title="Expand all" (click)="resquest_expandAll()" class="mr-2 bg-transparent btn p-0">
+                                <i class="fa fa-caret-down" aria-hidden="true"></i>
+                            </button>
+
+
+                            <button pButton type="button" label="Collapse all" title="Collapse all" (click)="resquest_collapseAll()" class="bg-transparent btn p-0">
+                                    <i class="fa fa-caret-up" aria-hidden="true"></i>
+                            </button>
+
+
+                    </div>
+                    </div>
+                    <div class="tree-block">
+                        <p-tree [value]="requestJSON" *ngIf="requestJSON.length>0;else RequestNoDataFound" expanded="true"></p-tree>
+                        <ng-template #RequestNoDataFound class="no-data font-weight-bold">No Data Found</ng-template>
+                        <!-- <tree-root #tree [focused]="true"  [nodes]="nodes" [options]="options"></tree-root> -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+
+                <div class="bg-block d-flex justify-content-between">
+                    <span class=" font-weight-bold">lookup: {{header.lookup}}</span>
+                    <span class="pr-3 pl-3 font-weight-bold">YMME: {{header.ymme}}</span>
+                    <span class=" font-weight-bold">ErrFlg: {{header.errFlg}}</span>
+                </div>
+                <div class="bg-block">
+                        <div class="d-flex align-items-center justify-content-between">
+                    <span class="block-header font-weight-bold">Response</span>
+                        <div class="mr-3">
+
+                                        <button pButton type="button" label="Expand all" title="Expand all" (click)="response_expandAll()" class="mr-2 bg-transparent btn p-0">
+                                            <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                        </button>
+
+
+
+                                    <button pButton type="button" label="Collapse all" title="Collapse all" (click)="response_collapseAll()" class="mr-2 bg-transparent btn p-0">
+                                        <i class="fa fa-caret-up" aria-hidden="true"></i>
+                                    </button>
+
+
+                        </div>
+                    </div>
+                    <div class="tree-block">
+                        <p-tree [value]="responseJSON" *ngIf="responseJSON.length>0;else ResponseNoDataFound" expanded="true"></p-tree>
+                        <ng-template #ResponseNoDataFound class="font-weight-bold">No Data Found</ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-template #showLoader>
+            <div class="row">
+                <div class="col-12">
+                    <div class="lds-dual-ring"></div>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+</ng-template>
+
+<!-- reqresp Modal end -->

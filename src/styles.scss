@@ -1,0 +1,174 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/bootstrap.scss";
+@import '~@swimlane/ngx-datatable/release/themes/material.css';
+@import '~@swimlane/ngx-datatable/release/assets/icons.css';
+@import "~@ng-select/ng-select/themes/default.theme.css";
+@import '~ngx-toastr/toastr.css';
+
+// // bootstrap style toast
+// // or import a bootstrap 4 alert styled design (SASS ONLY)
+// // should be after your bootstrap imports, it uses bs4 variables, mixins, functions
+// @import '~ngx-toastr/toastr-bs4-alert';
+
+// // if you'd like to use it without importing all of bootstrap it requires
+// @import '~bootstrap/scss/functions';
+// @import '~bootstrap/scss/variables';
+// @import '~bootstrap/scss/mixins';
+// @import '~ngx-toastr/toastr-bs4-alert';
+
+.page-container {
+	font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    .header {
+        height: 150px;
+        // transition:0.2s all;
+        visibility: visible;
+    }
+    .fa-thumbtack:before {
+        content: "\f08d";
+        font-size: 1rem;
+        /* font-weight: 400; */
+    }
+    .alt-header{
+        height: 0;
+        visibility: hidden;
+        // transition: 0.1s all;
+    }
+    .dots-icon button.sticked {
+        transform: rotate(45deg)!important;
+    }
+    .userName{
+        margin-top: 5px;
+        padding-left: 5px;
+    }
+    .dots-icon button {
+        width: 22px;
+        height:22px;
+        color: #b3b3b3;
+    }
+    .ngx-datatable.scroll-horz .datatable-body {
+        max-height: calc(100vh - 185px) ;
+    }
+    .no-scroll-table {
+             .ngx-datatable {
+                 .datatable-body {
+                    .datatable-scroll {
+                        width: 100% !important;
+                        overflow: hidden;
+                    }
+                    .datatable-body-row {
+                        // width: 100% !important;
+                        .datatable-body-cell:last-child {
+                            padding-right: 20px;
+                        }
+                    }
+                    .datatable-body-cell:last-child {
+                        padding-right: 15px;
+                    }
+                }
+            }
+        }
+
+
+    &.hide-search {
+        .header {
+            height: 0px;
+            visibility: hidden;
+        }
+        .alt-header{
+            height:35px;
+            visibility: visible;
+            span.dots-icon {
+                margin-right:1px;
+            }
+
+        }
+
+        .ngx-datatable{
+            .datatable-body{
+                max-height: calc(100vh - 70px);
+            }
+        }
+
+    }
+
+
+}
+
+
+
+.ngx-datatable{
+    .datatable-body-cell{
+        user-select: auto !important;
+    }
+    .datatable-header-cell-wrapper{
+        user-select: none;
+        cursor: move;
+    }
+    .datatable-body{
+        height:auto !important;
+    }
+    &.material {
+        box-shadow: none;
+    }
+    .datatable-checkbox input[type='checkbox'] {
+        margin-right: 4px;
+    }
+    span.sort-btn {
+        float: right;
+        font-size: 16px;
+        color: #fff;
+        top: 12px;
+        position: absolute;
+        right: 10px;
+    }
+}
+
+/* Spinner for table */
+.loader-wrapper{
+    position: absolute;
+    top: 0;
+    bottom:0;
+    left:0;
+    right:0;
+    background-color: rgba(0,0,0,0.5);
+}
+.lds-dual-ring {
+    position: relative;
+    top: 50%;
+    left:50%;
+    transform: (translate(-50%,-50%));
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+}
+.lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 46px;
+    height: 46px;
+    margin: 1px;
+    border-radius: 50%;
+    border: 5px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.alt-header span.dots-icon {
+    margin-right:2px;
+}
+// datatable-header.datatable-header {
+//     width: calc(100% - 15px) !important;
+// }
+
+// .ngx-datatable.fixed-header .datatable-header .datatable-header-inner {
+//     width: 100% !important;
+// }
