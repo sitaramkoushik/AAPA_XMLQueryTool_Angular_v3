@@ -7,7 +7,7 @@ import {CheckboxModule} from 'primeng/checkbox';
 
 import { HttpClient, HttpParams } from '@angular/common/http'
 import urls from '../routes/urls'
-import { signOut, merge } from '../helpers'
+import { signOut, merge, signOutFromCognito } from '../helpers'
 import { debounce } from 'lodash'
 import { NgbModal, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap'
 import { allCols,wdNameData, allAvailableCols, baseObject, envData, queryTypeData, actionData, defaultRowData, BaseObjectInterface, RequestDateInterface } from './data'
@@ -15,6 +15,7 @@ import { DatatableComponent } from "@swimlane/ngx-datatable";
 import { TreeNode } from 'primeng/api';
 import { cloneDeep } from "lodash";
 import { ToastrService } from 'ngx-toastr';
+import { LoginComponent } from "../login/login.component";
 declare var _:any
 
 @Component({
@@ -23,6 +24,8 @@ declare var _:any
 	styleUrls: ['./table.component.scss']
 })
 export class TableComponent implements OnInit {
+
+	@ViewChild('login') login: LoginComponent;
 
 	/**
 	 * data / objects
@@ -89,6 +92,7 @@ export class TableComponent implements OnInit {
 	allAvailableCols = allAvailableCols
 	queryObj: BaseObjectInterface = cloneDeep(baseObject)
 	selectedValue: any;
+	global = global || window;
 
 	/**
 	 * Methods
@@ -99,6 +103,7 @@ export class TableComponent implements OnInit {
 		private formBuilder: FormBuilder,
 		private toastr: ToastrService,
 		private ngbDatepickerConfig:NgbDatepickerConfig,
+//		private loginComponent: LoginComponent
 	) {
 
 		ngbDatepickerConfig.firstDayOfWeek = 7;
@@ -111,7 +116,6 @@ export class TableComponent implements OnInit {
 	}
 
 	ngOnInit() {
-
 		this.registerScrollEvent()
 		this.getSelectedColumns()
 		let data = localStorage.getItem('autoFillQueryData')
@@ -208,7 +212,7 @@ export class TableComponent implements OnInit {
 		   console.log(err,"failed");
 
 		  }
-		  this.modalService.open(wdModal, { ariaLabelledBy: 'modal-basic-title', size: 'sm', windowClass: 'detailed-popup help-page' })
+		  this.modalService.open(wdModal, { ariaLabelledBy: 'modal-basic-title', size: 'sm', windowClass: 'detailed-popup help-page wdNamesModal' })
 
 
 
@@ -441,6 +445,13 @@ export class TableComponent implements OnInit {
 		this.queryObj.params.start = 0
 		this.rows = []
 		this.rowCount = 0
+		this.login.getEnvProps(this.place);
+		let userName = localStorage.getItem('userName');
+		let password = localStorage.getItem('password');
+		console.log("username is",userName);
+		//signOutFromCognito();
+		this.login.cognitoAwsAmplify(true,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId);
+
 		this.getData()
 		this.closeFilters()
 	}

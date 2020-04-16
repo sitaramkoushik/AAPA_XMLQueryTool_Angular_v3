@@ -76,7 +76,7 @@
                             </datalist>
                         </div>
                     </div>
-                    <div class="">
+                    <div class="search-by-custom-cls">
                         <div class="form-group">
                             <label style="text-align:left" class="col-sm-12 control-label pl-2 pr-2">Search By</label>
                             <div class="col-sm-12  pl-2 pr-2">
@@ -384,10 +384,10 @@
 
     <div>
         <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-md-4">
+            <div class="ui-g-12 ui-md-11">
                 <div class="ui-inputgroup">
 
-                    <input type="text" pInputText placeholder="Search Keyword" [(ngModel)]="valueSearch">
+                    <input type="text" class="ui-md-12" pInputText placeholder="Search WdNames" [(ngModel)]="valueSearch">
 
                 </div>
             </div>
@@ -396,14 +396,16 @@
 
 
     <div class="modal-body">
-        <div *ngFor = "let name of wdNamesData |filter:valueSearch" >
-            <div class="checkText">
-                    <p-checkbox name="group2" value="{{name.value}}" class="ui-chkbox-label" label="{{name.label}}"   (onChange)="onChangeSelectedWd($event,name)"></p-checkbox>
-                </div>
-         </div>
+        <div class="wdnames">
+            <div *ngFor = "let name of wdNamesData |filter:valueSearch" >
+                <div class="checkText">
+                        <p-checkbox name="group2" value="{{name.value}}" class="ui-chkbox-label" label="{{name.label}}"   (onChange)="onChangeSelectedWd($event,name)"></p-checkbox>
+                    </div>
+            </div>
+        </div>
     </div>
 
-    <div>
+    <div class="modal-footer">
         <button class="wdSubmit modalButton" (click)="submitWdname()">Submit</button>
     </div>
 </ng-template>
@@ -679,3 +681,6 @@
 </ng-template>
 
 <!-- reqresp Modal end -->
+<div style="display:none;">
+<login #login></login>
+</div>

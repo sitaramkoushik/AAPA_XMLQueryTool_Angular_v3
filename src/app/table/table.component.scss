@@ -55,3 +55,80 @@ tree-node:last-child > .tree-node > .tree-children::after {
   z-index: 1;
 }
 
+/**Xml query css**/
+
+
+.detailed-popup.help-page .modal-dialog {
+  width: 40%;
+  height: auto;
+}
+.detailed-popup.help-page .modal-content
+{
+  border-radius: 4px;
+  min-height: 250px;
+}
+.detailed-popup .modal-content button
+{
+  background-color:transparent;
+  border:1px solid;
+  padding:5px 20px;
+}
+.detailed-popup .modal-content button.close {
+  border: 0;
+  margin-top: -10px;
+}
+.detailed-popup .modal-footer
+{
+justify-content:flex-start;
+padding: 5px 10px;
+}
+.detailed-popup .modal-footer button.wdSubmit.modalButton {
+background-color: #f45f63;
+  border-color: #f23b40;
+  color:#fff;
+}
+
+.detailed-popup .ui-inputgroup input {
+  padding: 2px 5px;
+  border-radius: 3px;
+  border: 1px solid #ddd;
+}
+
+.detailed-popup .modal-header {
+  padding: 20px !important;
+}
+
+.detailed-popup.help-page {
+  display: flex !important;
+  align-items: center;
+}
+.search-by-custom-cls .ui-dropdown {
+  height: 34px;
+  min-height: 34px;
+  box-shadow: none;
+  min-width: 120px;
+  padding: 2px;
+  border: 1px solid rgb(222, 218, 217);
+  background-color: transparent;
+}
+.search-by-custom-cls .ui-inputtext,.search-by-custom-cls .ui-dropdown .ui-dropdown-trigger {
+background-color: transparent;
+height: 100%;
+display: flex !important;
+align-items: center;
+}
+.search-by-custom-cls .ui-inputtext {
+padding: 0;
+text-transform: uppercase;
+}
+.search-by-custom-cls .ui-dropdown-panel .ui-dropdown-item {
+padding: 8px 10px;
+color: #333;
+text-transform: uppercase;
+}
+.search-by-custom-cls ul.ui-dropdown-items {
+padding: 0 !important;
+}
+.search-by-custom-cls .ui-dropdown-item.ui-state-highlight {
+background-color: #ebf5ff;
+}
