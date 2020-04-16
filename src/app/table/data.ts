@@ -31,6 +31,7 @@ let envData = [
 	{ value: 'DEV', label: 'DEV' },
 ]
 let queryTypeData = [
+	{value: '',label: ''},
 	{ value: 'screenName', label: 'Screen Name' },
 	{ value: 'orgId', label: 'Org ID' },
 	{ value: 'userid', label: 'User ID' },

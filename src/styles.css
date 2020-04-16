@@ -1116,3 +1116,211 @@ p-treenode {
 body .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value {
     border: 1px solid rgb(222, 218, 217);
 }
+
+
+/*
+login css
+*/
+
+.login-main-container {
+    background-color: #909090 !important;
+    align-items: baseline !important;
+}
+.login-main-container .login-sec {
+    margin-top: 35px !important;
+    min-height: auto;
+    background-color: #efefef;
+    max-width: 368px;
+    width: 100%;
+    margin: 6px auto;
+    padding: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,.5);
+    }
+
+.login-main-container .login-sec .panel-heading {
+    background: none;
+    padding-top: 13px;
+    padding-bottom: 10px;
+    display: block;
+    font-size: 16px;
+}
+.login-main-container .login-sec .panel-heading .panel-title {
+    font-size: 16px;
+    font-weight: 100;
+}
+.login-user-details-custom .login-sec form label {
+    display: flex;
+}
+.login-user-details-custom .login-sec form label span.error {
+    order: 2;
+    }
+
+.login-user-details-custom .login-sec button{
+ font-size: 14px;
+    font-weight: bold;
+    height: 40px;
+    width: 100%;
+    color: #fff;
+    background-color: #F45F63 !important;
+    border: 1px solid #2e6da4;
+    border-radius: 5px;
+}
+.login-main-container .login-sec .panel-heading .panel-title,.login-user-details-custom .login-sec form label{
+    color:#5c5c5c;
+}
+.login-user-details-custom .login-sec form .form-group
+{
+    margin-bottom:0;
+}
+.login-user-details-custom .login-sec button
+{
+    margin-top: 10px;
+}
+/**Xml query css**/
+
+
+.wdNamesModal.detailed-popup.help-page .modal-dialog {
+    width: 40%;
+    height: auto;
+}
+.wdNamesModal.detailed-popup.help-page .modal-content
+{
+    border-radius: 4px;
+    min-height: 250px;
+}
+.wdNamesModal.detailed-popup .modal-content button
+{
+    background-color:transparent;
+    border:1px solid;
+    padding:5px 20px;
+}
+.wdNamesModal.detailed-popup .modal-content button.close {
+    border: 0;
+    margin-top: -10px;
+}
+.wdNamesModal.detailed-popup .modal-footer
+{
+  justify-content:flex-start;
+  padding: 5px 10px;
+}
+.wdNamesModal.detailed-popup .modal-footer button.wdSubmit.modalButton {
+  background-color: #f45f63;
+    border-color: #f23b40;
+    color:#fff;
+}
+
+.wdNamesModal.detailed-popup .ui-inputgroup input {
+    padding: 2px 5px;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+}
+
+.wdNamesModal.detailed-popup .modal-header {
+    padding: 20px !important;
+}
+
+.wdNamesModal.detailed-popup.help-page {
+    display: flex !important;
+    align-items: center;
+}
+.search-by-custom-cls .ui-dropdown {
+    height: 34px;
+    min-height: 34px;
+    box-shadow: none;
+    min-width: 120px;
+    padding: 2px;
+    border: 1px solid rgb(222, 218, 217);
+    background-color: transparent;
+}
+.search-by-custom-cls .ui-inputtext,.search-by-custom-cls .ui-dropdown .ui-dropdown-trigger {
+background-color: transparent;
+height: 100%;
+display: flex !important;
+align-items: center;
+}
+.search-by-custom-cls .ui-inputtext {
+padding: 0;
+text-transform: capitalize;
+}
+.search-by-custom-cls .ui-dropdown-panel .ui-dropdown-item {
+padding: 8px 10px;
+color: #333;
+text-transform: capitalize;
+}
+.search-by-custom-cls ul.ui-dropdown-items {
+padding: 0 !important;
+}
+.search-by-custom-cls .ui-dropdown-item.ui-state-highlight {
+background-color: #ebf5ff;
+}
+.wdnames {
+    max-height: 300px;
+    overflow: auto;
+}
+.search-by-custom-cls .ui-dropdown-trigger.ui-state-default.ui-corner-right {
+    border-left: 0;
+}
+.search-by-custom-cls .ui-dropdown label.ui-inputtext,.search-by-custom-cls .ui-dropdown-panel .ui-dropdown-item {
+    font-family: "Montserrat";
+    }
+
+.search-by-custom-cls .ui-dropdown-trigger.ui-state-default.ui-corner-right .ui-dropdown-trigger-icon:before {
+    font-size: 15px;
+    color:#999;
+}
+.search-by-custom-cls .ui-dropdown-trigger.ui-state-default.ui-corner-right {
+    padding-right: 25px;
+    top: -2px;
+}
+.search-by-custom-cls .ui-dropdown-item.ui-state-highlight
+{
+    background-color: #efedf0;
+    color:#333;
+     font-weight: 600;
+}
+.search-by-custom-cls .ui-dropdown-item span
+{
+    font-family:'Montserrat';
+  }
+  .search-by-custom-cls .ui-dropdown label.ui-inputtext
+{
+  padding:0px 5px;
+}
+.wdNamesModal.detailed-popup.help-page {
+    overflow-y: hidden;
+}
+.search-by-custom-cls .ui-inputtext .ui-dropdown-open .ui-dropdown-trigger.ui-state-default.ui-corner-right .pi-caret-down:before
+{
+content: "\e907";
+}
+
+
+
+
+.wdnames label.ui-chkbox-label {
+    margin: 0 0px 0px 10px;
+    font-family: "Montserrat";
+}
+.wdnames .checkText {
+    margin-bottom: 0.5rem;
+}
+.wdNamesModal.detailed-popup .modal-content button
+{
+    border-radius:4px;
+}
+.wdNamesModal.detailed-popup .modal-content
+{
+background-image: linear-gradient(90deg, rgb(197, 195, 199) 7%, rgb(239, 237, 240) 37%, rgb(239, 237, 240) 67%, rgb(197, 195, 199) 88%);
+}
+.wdNamesModal.detailed-popup .ui-inputgroup input,.wdNamesModal.detailed-popup .ui-chkbox .ui-chkbox-box
+{
+    background-color:transparent;
+    border-color:#000;
+    font-weight:700;
+    color:#000 !important;
+    box-shadow:none;
+}
+.wdNamesModal.detailed-popup .ui-inputgroup input
+{
+    min-height:34px;
+}
