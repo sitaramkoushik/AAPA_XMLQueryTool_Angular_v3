@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
- baseUrl:'https://ms.myplace4parts.com/prod/'
+  login : "http://myplaceforparts.com/user_login_rest_service-portlet/api/secure/jsonws/userlogin/authenticate-xml-user"
+
 };

@@ -22,10 +22,19 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private router: Router) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Get the auth header from the service.
-    const authHeader = Cookies.get('xmlQueryToken') || ''
+    //Get the auth header from the service.
+    var ClientId = localStorage.getItem('ClientId')
+    let userName = localStorage.getItem('userName');
+    let idToken = "CognitoIdentityServiceProvider."+ClientId+"."+userName+".idToken"
+    console.log(idToken,"idToken is")
+    let authHeader = localStorage.getItem(idToken) || '';
+    console.log("authHeader",authHeader);
+     //const authHeader = Cookies.get('xmlQueryToken') || ''
     // Clone the request to add the new header.
-    const authReq = req.clone({ headers: req.headers.set('Authorization', authHeader) });
+    let authReq:any
+
+      authReq = req.clone({ headers: req.headers.set('Authorization', authHeader) });
+
     // Pass on the cloned request instead of the original request.
     return next.handle(authReq).pipe(map((event: HttpEvent<any>) => {
       // console.info('HttpResponse::event =', event, ';');

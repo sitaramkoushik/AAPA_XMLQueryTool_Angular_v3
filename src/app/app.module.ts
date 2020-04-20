@@ -22,6 +22,10 @@ import {CheckboxModule} from 'primeng/checkbox';
 import { ToastrModule } from 'ngx-toastr';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import {DropdownModule} from 'primeng/dropdown';
+import { StoreModule } from '@ngrx/store';
+import { reducers, metaReducers } from './store/reducers/index';
+
+
 
 @NgModule({
   declarations: [
@@ -34,6 +38,7 @@ import {DropdownModule} from 'primeng/dropdown';
     BrowserAnimationsModule,
     NoopAnimationsModule,
     BrowserModule,
+    StoreModule.forRoot(reducers, { metaReducers }),
     NgSelectModule,
     NgbModule,
     FormsModule,

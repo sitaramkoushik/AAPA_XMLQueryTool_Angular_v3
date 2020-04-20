@@ -4,16 +4,12 @@
 // let UAT = 'http://devmicroservices-772323968.us-east-1.elb.amazonaws.com/'
 let baseUrl4 = 'http://10.0.4.106:7070/'
 import {environment} from '../../environments/environment'
-
+import { baseurl } from "../helpers";
 export default {
-      loginUrl: environment.baseUrl + '/login/',
-      tableData: environment.baseUrl + '/advSearch',
-      reqResp: environment.baseUrl + '/xmlReqResp',
-      reqXml: environment.baseUrl + '/xmlreqresfromEs',
-      exportUrl:environment.baseUrl + '/exportData',
-      exportStatus:environment.baseUrl + '/getStatus',
-      wdNames:environment.baseUrl + '/getWdNames'
-   //  wdNames: 'http://myplace.ktree.company/aapa_rest_services_api-portlet/restServices/wds'
-
-    //  http://devmicroservices-772323968.us-east-1.elb.amazonaws.com/services/getWdNames?env=dev
-}
+      tableData: baseurl + '/advSearch',
+      reqResp: baseurl + '/xmlReqResp',
+      reqXml: baseurl + '/xmlreqresfromEs',
+      exportUrl : baseurl + '/exportData',
+      exportStatus : baseurl + '/getStatus',
+      wdNames : baseurl + '/getWdNames'
+  }

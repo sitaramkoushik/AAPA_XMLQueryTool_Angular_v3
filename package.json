@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build-prod": "ng build --base-href=/staging/xmlquerytool/ --deploy-url=/staging/xmlquerytool/ --prod && cp -r ./src/login ./dist",
+    "build-prod": "ng build --base-href=./ --deploy-url=./ --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -37,6 +37,7 @@
     "ngx-toastr": "^9.1.0",
     "primeicons": "^1.0.0-beta.10",
     "primeng": "^6.1.4",
+    "@ngrx/store": "6.1.0",
     "rxjs": "^6.3.2",
     "zone.js": "^0.8.26"
   },
