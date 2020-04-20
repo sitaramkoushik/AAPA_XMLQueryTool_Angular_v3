@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core'
+import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core'
 import {
 	FormGroup,
 	FormBuilder,
@@ -6,7 +6,8 @@ import {
 import {CheckboxModule} from 'primeng/checkbox';
 
 import { HttpClient, HttpParams } from '@angular/common/http'
-import urls from '../routes/urls'
+//import urls from '../routes/urls'
+import  urls, { baseurl } from "../helpers";
 import { signOut, merge, signOutFromCognito } from '../helpers'
 import { debounce } from 'lodash'
 import { NgbModal, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap'
@@ -16,6 +17,10 @@ import { TreeNode } from 'primeng/api';
 import { cloneDeep } from "lodash";
 import { ToastrService } from 'ngx-toastr';
 import { LoginComponent } from "../login/login.component";
+import { Store } from '@ngrx/store';
+import * as fromStore from '../store/reducers/index';
+import * as xmlQueryToolAction from '../store/actions/xmlQueryTool.actions';
+
 declare var _:any
 
 @Component({
@@ -26,6 +31,7 @@ declare var _:any
 export class TableComponent implements OnInit {
 
 	@ViewChild('login') login: LoginComponent;
+
 
 	/**
 	 * data / objects
@@ -93,7 +99,13 @@ export class TableComponent implements OnInit {
 	queryObj: BaseObjectInterface = cloneDeep(baseObject)
 	selectedValue: any;
 	global = global || window;
-
+	tableData
+	reqResponse: string;
+	reqXml: string;
+	exportUrl: string;
+	wdNames: string;
+	exportstatus: string;
+	disableButton:boolean =  false;
 	/**
 	 * Methods
 	 */
@@ -103,6 +115,7 @@ export class TableComponent implements OnInit {
 		private formBuilder: FormBuilder,
 		private toastr: ToastrService,
 		private ngbDatepickerConfig:NgbDatepickerConfig,
+		public store: Store<fromStore.State>
 //		private loginComponent: LoginComponent
 	) {
 
@@ -116,6 +129,14 @@ export class TableComponent implements OnInit {
 	}
 
 	ngOnInit() {
+		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
+		this.login.getEnvProps("PROD");
+		let userName = localStorage.getItem('userName');
+		let password = localStorage.getItem('password');
+		console.log("username is",userName);
+		//signOutFromCognito();
+		this.login.cognitoAwsAmplify(true,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
+
 		this.registerScrollEvent()
 		this.getSelectedColumns()
 		let data = localStorage.getItem('autoFillQueryData')
@@ -126,14 +147,24 @@ export class TableComponent implements OnInit {
 			this.timeFormat = timeFormat
 		}
 
+
 		this.getFormBuilder()
 		this.getTimeFormBuilder()
-		this.getData()
+		//this.getData()
 		this.closeFilters()
 	//	this.getWdnames()
 
 
+	}
 
+	tablesData(res){
+			this.rows = [...this.rows, ...res['data']]
+					this.rowCount = res['numResults']
+					this.loadingIndicator = false
+					this.tableMessages.emptyMessage = `<div class="text-center">No Data Avaliable</div>`
+					if (res['data'].length) {
+						this.checkIfScrollable()
+					}
 	}
 
 	 getWdnames(){
@@ -372,6 +403,12 @@ export class TableComponent implements OnInit {
 		  });
 	}
 	getData() {
+		this.tableData = baseurl + '/advSearch',
+		this.reqResponse = baseurl + '/xmlReqResp',
+		this.reqXml = baseurl + '/xmlreqresfromEs',
+		this.exportUrl = baseurl + '/exportData',
+		this.exportstatus = baseurl + '/getStatus',
+		this.wdNames = baseurl + '/getWdNames'
 		this.loadingIndicator = false
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 		let newParams = {
@@ -381,20 +418,17 @@ export class TableComponent implements OnInit {
 
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }
 		// @ts-ignore
-		this.http.get(urls.tableData, this.queryObj).subscribe(res => {
+
+		this.http.get(this.tableData, this.queryObj).subscribe(res => {
 			this.loadingIndicator = false
 
 			if (!res || !res['data']) {
 				alert('Something wrong')
 				return
 			}
-			this.rows = [...this.rows, ...res['data']]
-			this.rowCount = res['numResults']
-			this.loadingIndicator = false
-			this.tableMessages.emptyMessage = `<div class="text-center">No Data Avaliable</div>`
-			if (res['data'].length) {
-				this.checkIfScrollable()
-			}
+			this.store.dispatch(new xmlQueryToolAction.StoreTableData(res));
+			this.tablesData(res);
+
 		}, err => {
 			this.rows = []
 			this.loadingIndicator = false
@@ -441,18 +475,19 @@ export class TableComponent implements OnInit {
 		})
 	}
 
-	reSearch() {
+	 reSearch() {
 		this.queryObj.params.start = 0
 		this.rows = []
 		this.rowCount = 0
-		this.login.getEnvProps(this.place);
+		console.log(baseurl,"baseUrl is")
+		signOutFromCognito();
+		this.login.getEnvProps(this.place)
 		let userName = localStorage.getItem('userName');
 		let password = localStorage.getItem('password');
 		console.log("username is",userName);
 		//signOutFromCognito();
-		this.login.cognitoAwsAmplify(true,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId);
-
-		this.getData()
+		this.login.cognitoAwsAmplify(true,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
+		//this.getData()
 		this.closeFilters()
 	}
 
@@ -535,7 +570,7 @@ export class TableComponent implements OnInit {
 				ts: new Date().getTime()
 			}
 		}
-		this.http.get(urls.reqResp, body).subscribe(res => {
+		this.http.get(this.reqResponse, body).subscribe(res => {
 			if (!res) {
 				alert('Something wrong')
 				return
@@ -737,7 +772,7 @@ export class TableComponent implements OnInit {
 
 	async checkExportStatus()
 	{
-		let dataStatus = await this.http.get(urls.exportStatus).toPromise();
+		let dataStatus = await this.http.get(this.exportstatus).toPromise();
 		this.exportStatus = (dataStatus!=null && dataStatus['statusCode'])?dataStatus['statusCode']:'';
 
 		if(dataStatus!=null && dataStatus['statusCode']==100)  //completed
@@ -885,10 +920,9 @@ export class TableComponent implements OnInit {
 
 	onChangePlace(e){
 
-	   console.log(e,"e-value >>>>>>>");
-	   console.log(e.label,"e-value >>>>>>>");
 	   this.place = e.label
-
+	  // this.login.disableButton = true;
+	   //this.login.disableButton = false
 	}
 
 	onChangeSelectedWd(e,name){

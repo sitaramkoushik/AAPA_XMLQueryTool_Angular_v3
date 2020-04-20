@@ -25,8 +25,13 @@ export class GuestGuard implements CanActivate, CanActivateChild {
     }
 
     checkLogin(url: string): boolean {
-        let cookie = Cookies.get('xmlQueryToken');
-        if (cookie) {
+      //  let cookie = Cookies.get('xmlQueryToken');
+      var ClientId = localStorage.getItem('ClientId')
+    let userName = localStorage.getItem('userName');
+    let idToken = "CognitoIdentityServiceProvider."+ClientId+"."+userName+".idToken"
+    let authHeader = localStorage.getItem(idToken);
+    console.log(authHeader,"authHeader is")
+        if (authHeader!=null) {
             this.router.navigate(['/']);
             return true
         }

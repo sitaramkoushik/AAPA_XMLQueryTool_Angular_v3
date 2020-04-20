@@ -1,10 +1,13 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit,Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders,HttpParams } from '@angular/common/http';
 let Cookies = require('js-cookie');
 import { Router } from "@angular/router";
-import urls from "../routes/urls";
+import { changeBaseUrl,baseurl, } from "../helpers";
 // import AWS object without services
 import * as AWS from 'aws-sdk/global';
+import * as xmlQueryToolAction from '../store/actions/xmlQueryTool.actions';
+import { Store } from '@ngrx/store';
+import * as fromStore from '../store/reducers/index';
 import {environment} from '../../environments/environment'
 import {
 	CognitoUserPool,
@@ -12,8 +15,6 @@ import {
 	CognitoUser,
 } from 'amazon-cognito-identity-js';
 declare var window: any
-//   "replace": "src/environments/environment.ts",
-// "with": "src/environments/environment.prod.ts"
 
 @Component({
   selector: 'login',
@@ -21,47 +22,50 @@ declare var window: any
   // styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit{
+  @Output() tablesData: EventEmitter<any> = new EventEmitter();
   provider;
   isSignOut: boolean = false;
   cognitoUser: any;
 
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router,public store: Store<fromStore.State>) { }
   isInvalid:boolean = false;
   errorMsg = ''
   userName = '';
   password = '';
-  UserPoolId = ''
+  UserPoolId:any = ''
   ClientId = ''
   regionId = ''
   IdentityPoolId = ''
   env = '';
+  successOrFailure:boolean;
+  disableButton:boolean =  false;
   ngOnInit() {
-    this.getEnvProps(this.env);
+    console.log("lol")
+
+
   }
-    getEnvProps(env){
-    const location = window.location.href
-    console.log("location iss",location);
-    if( location == "DEV" || env == "DEV") {
+     getEnvProps(env){
+    if(env == "DEV") {
       console.log("dev")
       this.UserPoolId = 'us-east-1_q38uYDTHa'
       this.ClientId = '3dn006e20aft7s75ijam0bmsuf'
       this.regionId = 'us-east-1'
       this.IdentityPoolId = 'us-east-1:6a44e2cf-b89e-4ad0-abaa-49dba53f8dd0'
-    }else if (location == "STAGING" || env == "STAGING") {
+    }else if ( env == "STAGING") {
       console.log("staging")
       this.UserPoolId = 'us-east-1_EG7QRM8Ej'
       this.ClientId = '2f5d4qjvsmqu9cgroea9mokgia'
       this.regionId = 'us-east-1'
       this.IdentityPoolId = 'us-east-1:53807951-c2ed-45bf-a71e-9ea521b6afe8'
-    } else if (location == "PROD" || env == "PROD") {
+    } else if (env == "PROD") {
       console.log("prod")
       this.UserPoolId = 'us-east-1_nMzI8o7iu'
       this.ClientId = '5r283s0pt9cl41vc0v1mrj0bb2'
       this.regionId = 'us-east-1'
       this.IdentityPoolId = 'us-east-1:34dfed7e-1ec4-443c-bd23-c308aed829c0'
     } else {
-      console.log("staging else")
+      console.log("prod else")
       this.UserPoolId = 'us-east-1_nMzI8o7iu'
       this.ClientId = '5r283s0pt9cl41vc0v1mrj0bb2'
       this.regionId = 'us-east-1'
@@ -70,7 +74,7 @@ export class LoginComponent implements OnInit{
     localStorage.setItem('UserPoolId', this.UserPoolId)
     localStorage.setItem('ClientId', this.ClientId)
     this.provider ="cognito-idp."+this.regionId+".amazonaws.com/"+this.UserPoolId
-
+    changeBaseUrl(env);
   }
   login() {
     this.isInvalid = false;
@@ -79,20 +83,14 @@ export class LoginComponent implements OnInit{
     }
 
     if ((this.userName && this.userName.length) && (this.password && this.password.length)) {
-      const formData: FormData = new FormData();
-      formData.append('screen-name', this.userName);
-      formData.append('password', this.password);
-      let parameters = new HttpParams()
-			.set('screen-name', this.userName)
-      .set('password', this.password);
       let loginURL  = environment.login+'/screen-name/'+this.userName+'/password/'+this.password
       this.getEnvProps(this.env);
-     // let header = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization' : configs.tokenValue});
       this.http.get(loginURL)
        .subscribe(data => {
          if (data && data['statusCode']=='200') {
 
-         this.cognitoAwsAmplify(false,this.userName,this.password,this.regionId,this.IdentityPoolId,this.UserPoolId,this.ClientId);
+          this.cognitoAwsAmplify(false,this.userName,this.password,this.regionId,this.IdentityPoolId,this.UserPoolId,this.ClientId,false,
+            []);
 
             }
           else{
@@ -103,12 +101,13 @@ export class LoginComponent implements OnInit{
           this.errorMsg = 'Failed to connect to a  service'
           this.isInvalid = true
         })
-    } else {
+    }
+    else {
       this.errorMsg = 'Please Enter Username and Password'
       this.isInvalid = true
      }
   }
-  cognitoAwsAmplify(isSignedIn,userName,password,regionId,identityPoolId,UserPoolId,ClientId){
+  cognitoAwsAmplify(isSignedIn,userName,password,regionId,identityPoolId,UserPoolId,ClientId,isStore,queryObj:{}){
 
     var poolData = {
       UserPoolId:UserPoolId, // Your user pool id here
@@ -156,18 +155,27 @@ onSuccess: function(result) {
       // Instantiate aws sdk service objects now that the credentials have been updated.
       // example: var s3 = new AWS.S3();
       console.log('Successfully logged!');
+      //Cookies.set('xmlQueryToken',result.getIdToken().getJwtToken());
+      localStorage.setItem('userName', userName)
+      localStorage.setItem('password', password)
+      if(isStore){
+        self.http.get(baseurl + '/advSearch', queryObj).subscribe(res => {
+          this.loadingIndicator = false
+
+          if (!res || !res['data']) {
+            alert('Something wrong')
+            return
+          }
+          //self.store.dispatch(new xmlQueryToolAction.StoreTableData(res));
+          self.tablesData.emit(res);
+        })
+      }
+      self.router.navigate(['']);
     }
   });
-  Cookies.set('xmlQueryToken',result.getIdToken().getJwtToken());
+  //is this correct way?
+  this.disableButton = true;
 
-  console.log(userName,"usrname");
-  self.router.navigate(['']);
-
-  ///Cookies.set('xmlQueryToken',result.getIdToken().getJwtToken());
-  localStorage.setItem('userName', userName)
-  localStorage.setItem('password', password)//is this correct way?
-
-  console.log("after route")
 },
 
 //	onFailure: function(err) {
