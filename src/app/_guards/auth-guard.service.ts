@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     }
 
     checkLogin(url: string): boolean {
-        let cookie = Cookies.get('xmlQueryToken');
+       // let cookie = Cookies.get('xmlQueryToken');
         var ClientId = localStorage.getItem('ClientId')
     let userName = localStorage.getItem('userName');
     let idToken = "CognitoIdentityServiceProvider."+ClientId+"."+userName+".idToken"
