@@ -5,8 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build-prod": "ng build --base-href=/xmlquery/ --deploy-url=/xmlquery/ --prod && copy -r ./src/login ./dist",
-"test": "ng test",
+    "build-prod": "ng build --base-href=/xmlquery/ --deploy-url=/xmlquery/ --prod",
+    "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
