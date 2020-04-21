@@ -173,10 +173,11 @@ export class TableComponent implements OnInit {
 
 		let name = this.place
 		console.log(name, "name >>>>>>>>>>>>>");
-			let parameters = new HttpParams()
-		.set('env',name);
+		// 	let parameters = new HttpParams()
+		// .set('env',name);
 
-	   this.http.get(urls.wdNames, { params: parameters }).subscribe(res => {
+	   //this.http.get(urls.wdNames, { params: parameters }).subscribe(res => {
+		this.http.get(urls.wdNames).subscribe(res => {
 		console.log("res is:::",res)
 		console.log("statusCode:::",res['result'])
 		this.wdNamesService = res['result']
@@ -214,10 +215,11 @@ export class TableComponent implements OnInit {
 
 			  let name = this.place
 			  console.log(name, "name >>>>>>>>>>>>>");
-				  let parameters = new HttpParams()
-			  .set('env',name);
+			// 	  let parameters = new HttpParams()
+			//   .set('env',name);
 
-			 this.http.get(urls.wdNames, { params: parameters }).subscribe(res => {
+			 //this.http.get(urls.wdNames, { params: parameters }).subscribe(res => {
+				this.http.get(this.wdNames).subscribe(res => {
 			  console.log("res is:::",res)
 			  console.log("statusCode:::",res['result'])
 			  this.wdNamesService = res['result']
@@ -561,12 +563,20 @@ export class TableComponent implements OnInit {
 		this.selectedColumnID = data
 		let row = this.rows.find((item) => item['id'] == data)
 		this.reqResp = {}
+		// let body: Object = {
+		// 	params: {
+		// 		id: row['id'],
+		// 		created: row['created'],
+		// 		server: row['server'],
+		// 		env: this.queryObj.params.env,
+		// 		ts: new Date().getTime()
+		// 	}
+		// }
 		let body: Object = {
 			params: {
 				id: row['id'],
 				created: row['created'],
 				server: row['server'],
-				env: this.queryObj.params.env,
 				ts: new Date().getTime()
 			}
 		}
@@ -603,8 +613,8 @@ export class TableComponent implements OnInit {
 
 		let parameters = new HttpParams()
 			.set('activityDate', year + month)
-			.set('xmlActivityId', row['id'])
-			.set('env', this.queryObj.params.env);
+			.set('xmlActivityId', row['id']);
+			//.set('env', this.queryObj.params.env);
 
 		this.http.get(urls.reqXml, { params: parameters }).subscribe(res => {
 			console.log(res, "resssssssssssssssssssssssss-")
@@ -806,7 +816,7 @@ export class TableComponent implements OnInit {
 
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }
 		let parameters = new HttpParams()
-		.set('env', this.queryObj.params.env)
+		//.set('env', this.queryObj.params.env)
 		.set('queryType', this.queryObj.params.queryType)
 		.set('searchKey', this.queryObj.params.searchKey)
 		.set('action', this.queryObj.params.action)

@@ -44,7 +44,7 @@ function changeBaseUrl(env){
       }else if (env == "PROD") {
         baseurl = "https://ms.myplace4parts.com/prod/xmlQueryTool"
       }else if(env == "DEV") {
-        baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool/"
+        baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
       }
 }
 export default {
