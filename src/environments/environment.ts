@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-   //login : "http://myplaceforparts.com/user_login_rest_service-portlet/api/secure/jsonws/userlogin/authenticate-xml-user"
-   login : "http://staging.myplaceforparts.com/api/jsonws/user_login_rest_service-portlet.userlogin/authenticate-xml-user"
+   login : "https://ms.myplace4parts.com/op/hqUser/userLogin"
+   //login : "http://staging.myplaceforparts.com/api/jsonws/user_login_rest_service-portlet.userlogin/authenticate-xml-user"
 };
 
 /*
