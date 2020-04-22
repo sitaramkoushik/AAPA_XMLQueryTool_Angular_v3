@@ -83,9 +83,11 @@ export class LoginComponent implements OnInit{
     }
 
     if ((this.userName && this.userName.length) && (this.password && this.password.length)) {
-      let loginURL  = environment.login+'/screen-name/'+this.userName+'/password/'+this.password
+      let parameters = new HttpParams()
+			.set('screenName', this.userName)
+			.set('password', this.password);
       this.getEnvProps(this.env);
-      this.http.get(loginURL)
+      this.http.post(environment.login, {userName:this.userName,password:this.password} )
        .subscribe(data => {
          if (data && data['statusCode']=='200') {
 
