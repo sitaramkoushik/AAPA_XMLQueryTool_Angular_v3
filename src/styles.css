@@ -1192,7 +1192,7 @@ login css
 {
     background-color:transparent;
     border:1px solid;
-    padding:5px 20px;
+    padding:5px 15px;
 }
 .wdNamesModal.detailed-popup .modal-content button.close {
     border: 0;
@@ -1204,15 +1204,17 @@ login css
   padding: 5px 10px;
 }
 .wdNamesModal.detailed-popup .modal-footer button.wdSubmit.modalButton {
-  background-color: #f45f63;
-    border-color: #f23b40;
-    color:#fff;
+	padding: 7px 15px;
+	border-radius: 5px;
+   color: #000;
+
 }
 
 .wdNamesModal.detailed-popup .ui-inputgroup input {
     padding: 2px 5px;
     border-radius: 3px;
-    border: 1px solid #ddd;
+	border: 1px solid #ddd;
+	border-color: rgb(158, 155, 155) !important;
 }
 
 .wdNamesModal.detailed-popup .modal-header {
@@ -1323,4 +1325,29 @@ background-image: linear-gradient(90deg, rgb(197, 195, 199) 7%, rgb(239, 237, 24
 .wdNamesModal.detailed-popup .ui-inputgroup input
 {
     min-height:34px;
+}
+.wdNamesModal.detailed-popup .ui-inputgroup input {
+    font-weight: 400;
+    color: #342F36 !important;
+    font-family: "Montserrat";
+}
+.wdNamesModal.detailed-popup button.wdSubmit.modalButton {
+    background-color: #403647;
+    border: 1px solid;
+    padding: 5px 15px;
+    color: #fff;
+    font-weight:400;
+    border-color: #403647;
+    font-family: "Montserrat";
+}
+.search-by-custom-cls .ui-dropdown.ui-dropdown-open .ui-dropdown-panel {
+    top: 31px !important;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+    border-radius: 0;
+    min-width: 126px;
+    left: -1px !important;
+}
+
+.wdNamesModal.detailed-popup .ui-inputgroup input:focus {
+    outline: 0;
 }

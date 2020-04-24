@@ -23,6 +23,7 @@ declare var window: any
 })
 export class LoginComponent implements OnInit{
   @Output() tablesData: EventEmitter<any> = new EventEmitter();
+  @Output() disableButtons: EventEmitter<any> = new EventEmitter();
   provider;
   isSignOut: boolean = false;
   cognitoUser: any;
@@ -39,7 +40,6 @@ export class LoginComponent implements OnInit{
   IdentityPoolId = ''
   env = '';
   successOrFailure:boolean;
-  disableButton:boolean =  false;
   ngOnInit() {
     console.log("lol")
 
@@ -170,6 +170,7 @@ onSuccess: function(result) {
           }
           //self.store.dispatch(new xmlQueryToolAction.StoreTableData(res));
           self.tablesData.emit(res);
+          self.disableButtons.emit(false);
         })
       }
       self.router.navigate(['']);

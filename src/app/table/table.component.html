@@ -33,9 +33,10 @@
                     <div class="d-flex right-side-content">
                         <div class="right-side-bottom">
                             <div class="">
+                                <!--[(ngModel)]="queryObj['params']['env']"-->
                                 <div class="col-sm-offset-1">
                                     <ng-select [items]="envData" [searchable]="false" [clearable]="false"
-                                    [(ngModel)]="queryObj['params']['env']" bindValue="value"
+                                    [(ngModel)]="place" 
                                     (change)="onChangePlace($event)"
                                     >
                                     </ng-select>
@@ -386,7 +387,7 @@
 
     <div>
         <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-md-11">
+            <div class="ui-g-12 ui-md-12">
                 <div class="ui-inputgroup">
 
                     <input type="text" class="ui-md-12" pInputText placeholder="Search WdNames" [(ngModel)]="valueSearch">
@@ -686,5 +687,6 @@
 <div style="display:none;">
 <login #login
 (tablesData)= "tablesData($event)"
+(disableButtons)="disableButtons($event)"
 ></login>
 </div>

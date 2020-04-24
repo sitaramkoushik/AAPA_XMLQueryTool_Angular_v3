@@ -106,6 +106,7 @@ export class TableComponent implements OnInit {
 	wdNames: string;
 	exportstatus: string;
 	disableButton:boolean =  false;
+	isEnvchahnged: boolean = false;
 	/**
 	 * Methods
 	 */
@@ -167,38 +168,8 @@ export class TableComponent implements OnInit {
 					}
 	}
 
-	 getWdnames(){
-		console.log('hello wd names >>>>');
-	  try{
-
-		let name = this.place
-		console.log(name, "name >>>>>>>>>>>>>");
-		// 	let parameters = new HttpParams()
-		// .set('env',name);
-
-	   //this.http.get(urls.wdNames, { params: parameters }).subscribe(res => {
-		this.http.get(urls.wdNames).subscribe(res => {
-		console.log("res is:::",res)
-		console.log("statusCode:::",res['result'])
-		this.wdNamesService = res['result']
-		console.log(this.wdNamesService,"wdnames >>>>>.");
-
-
-		if(res && res['statusCode']=='200'){
-			console.log('sucess');
-
-		}else{
-			console.log('failed at statuscode');
-
-		}
-	});
-
-	}catch(err){
-     console.log(err,"failed");
-
-	}
-
-
+disableButtons(event){
+	this.disableButton = event
 }
 
 	openWdModal(wdModal) {
@@ -209,46 +180,18 @@ export class TableComponent implements OnInit {
 			this.checkData=[];
 			this.newArray=[]
 			this.wdNamesData=[]
-
-			console.log('hello wd names >>>>');
 			try{
-
-			  let name = this.place
-			  console.log(name, "name >>>>>>>>>>>>>");
-			// 	  let parameters = new HttpParams()
-			//   .set('env',name);
-
-			 //this.http.get(urls.wdNames, { params: parameters }).subscribe(res => {
 				this.http.get(this.wdNames).subscribe(res => {
-			  console.log("res is:::",res)
-			  console.log("statusCode:::",res['result'])
-			  this.wdNamesService = res['result']
-			  console.log(this.wdNamesService,"wdnames service>>>>>.");
-			//  console.log(this.wdNamesData,"ed name empty");
-
-			this.wdNamesData = this.wdNamesService
-			console.log(this.wdNamesData, "have data for moadl");
-
-
-
-
-			  if(res && res['statusCode']=='200'){
-				  console.log('sucess');
-
-			  }else{
-				  console.log('failed at statuscode');
-
+					if(res && res['statusCode']=='200'){
+						this.wdNamesService = res['result']
+					  this.wdNamesData = this.wdNamesService
+			  		}else{
 			  }
 		  });
-
 		  }catch(err){
 		   console.log(err,"failed");
-
 		  }
 		  this.modalService.open(wdModal, { ariaLabelledBy: 'modal-basic-title', size: 'sm', windowClass: 'detailed-popup help-page wdNamesModal' })
-
-
-
 				}
 
 
@@ -301,10 +244,11 @@ export class TableComponent implements OnInit {
 
 
 	clearFilters() {
-		this.rows = []
-		this.rowCount = 0
+	//	this.rows = []
+	//	this.rowCount = 0
 		this.selectedAction = '';
 		this.searchKey = ''
+		this.selectedValue = ''
 		this.startDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
 		this.endDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
 		this.queryObj = cloneDeep(baseObject)
@@ -425,6 +369,7 @@ export class TableComponent implements OnInit {
 			this.loadingIndicator = false
 
 			if (!res || !res['data']) {
+				this.disableButton = false;
 				alert('Something wrong')
 				return
 			}
@@ -433,6 +378,7 @@ export class TableComponent implements OnInit {
 
 		}, err => {
 			this.rows = []
+			this.disableButton = false;
 			this.loadingIndicator = false
 			this.tableMessages.emptyMessage = '<div class="text-center">No Data Avaliable</div>'
 			if (err) {
@@ -443,6 +389,7 @@ export class TableComponent implements OnInit {
 			err.name == 'TimeoutError' ? this.timeOutError('Request TimeOut') : false;
 		})
 		this.addSearchKey()
+		this.disableButton = false;
 	}
 
 	private addSearchKey() {
@@ -481,7 +428,9 @@ export class TableComponent implements OnInit {
 		this.queryObj.params.start = 0
 		this.rows = []
 		this.rowCount = 0
-		console.log(baseurl,"baseUrl is")
+		this.disableButton = true;
+		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
+		if(this.isEnvchahnged){
 		signOutFromCognito();
 		this.login.getEnvProps(this.place)
 		let userName = localStorage.getItem('userName');
@@ -490,6 +439,10 @@ export class TableComponent implements OnInit {
 		//signOutFromCognito();
 		this.login.cognitoAwsAmplify(true,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
 		//this.getData()
+		}else{
+			this.getData()
+		}
+		this.isEnvchahnged = false;
 		this.closeFilters()
 	}
 
@@ -929,10 +882,8 @@ export class TableComponent implements OnInit {
 
 
 	onChangePlace(e){
-
 	   this.place = e.label
-	  // this.login.disableButton = true;
-	   //this.login.disableButton = false
+	   this.isEnvchahnged = true
 	}
 
 	onChangeSelectedWd(e,name){
