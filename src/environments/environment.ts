@@ -5,7 +5,6 @@
 export const environment = {
   production: false,
    login : "https://ms.myplace4parts.com/op/hqUser/userLogin"
-   //login : "http://staging.myplaceforparts.com/api/jsonws/user_login_rest_service-portlet.userlogin/authenticate-xml-user"
 };
 
 /*
