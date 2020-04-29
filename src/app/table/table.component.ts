@@ -3,11 +3,8 @@ import {
 	FormGroup,
 	FormBuilder,
 } from '@angular/forms'
-import {CheckboxModule} from 'primeng/checkbox';
-
 import { HttpClient, HttpParams } from '@angular/common/http'
 //import urls from '../routes/urls'
-import  urls, { baseurl } from "../helpers";
 import { signOut, merge, signOutFromCognito } from '../helpers'
 import { debounce } from 'lodash'
 import { NgbModal, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap'
@@ -97,7 +94,7 @@ export class TableComponent implements OnInit {
 	header = {}
 	allAvailableCols = allAvailableCols
 	queryObj: BaseObjectInterface = cloneDeep(baseObject)
-	selectedValue: any;
+	selectedValue='';
 	global = global || window;
 	tableData
 	reqResponse: string;
@@ -107,6 +104,9 @@ export class TableComponent implements OnInit {
 	exportstatus: string;
 	disableButton:boolean =  false;
 	isEnvchahnged: boolean = false;
+	baseurl: any;
+	wdNameSelected: boolean = true;
+	modelref: any
 	/**
 	 * Methods
 	 */
@@ -128,7 +128,11 @@ export class TableComponent implements OnInit {
 			this.reSearch()
 		}
 	}
-
+	closeDialogue(){
+		this.wdNameSelected = true
+		this.modelref.close();
+		console.log("close clicked")
+	}
 	ngOnInit() {
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 		this.login.getEnvProps("PROD");
@@ -136,7 +140,7 @@ export class TableComponent implements OnInit {
 		let password = localStorage.getItem('password');
 		console.log("username is",userName);
 		//signOutFromCognito();
-		this.login.cognitoAwsAmplify(true,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
+		this.login.cognitoAwsAmplify("https://ms.myplace4parts.com/prod/xmlQueryTool",userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
 
 		this.registerScrollEvent()
 		this.getSelectedColumns()
@@ -173,10 +177,6 @@ disableButtons(event){
 }
 
 	openWdModal(wdModal) {
-			//this.place= this.place
-			//await this.getWdnames();
-
-			console.log('modal open');
 			this.checkData=[];
 			this.newArray=[]
 			this.wdNamesData=[]
@@ -191,7 +191,7 @@ disableButtons(event){
 		  }catch(err){
 		   console.log(err,"failed");
 		  }
-		  this.modalService.open(wdModal, { ariaLabelledBy: 'modal-basic-title', size: 'sm', windowClass: 'detailed-popup help-page wdNamesModal' })
+		  this.modelref = this.modalService.open(wdModal, { ariaLabelledBy: 'modal-basic-title', size: 'sm', windowClass: 'detailed-popup help-page wdNamesModal' })
 				}
 
 
@@ -348,13 +348,25 @@ disableButtons(event){
 			timeOut: 4000
 		  });
 	}
+	updateUrls(env){
+			console.log(env,"env isssssssss")
+			 if ( env == "STAGING") {
+				this.baseurl = "https://ms.myplace4parts.com/staging/xmlQueryTool"
+			  }else if (env == "PROD") {
+				this.baseurl = "https://ms.myplace4parts.com/prod/xmlQueryTool"
+			  }else if(env == "DEV") {
+				this.baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
+			  }
+		this.tableData = this.baseurl + '/advSearch',
+		this.reqResponse = this.baseurl + '/xmlReqResp',
+		this.reqXml = this.baseurl + '/xmlreqresfromEs',
+		this.exportUrl = this.baseurl + '/exportData',
+		this.exportstatus = this.baseurl + '/getStatus',
+		this.wdNames = this.baseurl + '/getWdNames'
+		console.log("baseurl is::::",this.baseurl);
+	}
 	getData() {
-		this.tableData = baseurl + '/advSearch',
-		this.reqResponse = baseurl + '/xmlReqResp',
-		this.reqXml = baseurl + '/xmlreqresfromEs',
-		this.exportUrl = baseurl + '/exportData',
-		this.exportstatus = baseurl + '/getStatus',
-		this.wdNames = baseurl + '/getWdNames'
+		
 		this.loadingIndicator = false
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 		let newParams = {
@@ -433,11 +445,13 @@ disableButtons(event){
 		if(this.isEnvchahnged){
 		signOutFromCognito();
 		this.login.getEnvProps(this.place)
+		console.log(this.place,"envvvvvvvvvv")
+		this.updateUrls(this.place);
 		let userName = localStorage.getItem('userName');
 		let password = localStorage.getItem('password');
 		console.log("username is",userName);
 		//signOutFromCognito();
-		this.login.cognitoAwsAmplify(true,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
+		this.login.cognitoAwsAmplify(this.baseurl,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
 		//this.getData()
 		}else{
 			this.getData()
@@ -569,7 +583,7 @@ disableButtons(event){
 			.set('xmlActivityId', row['id']);
 			//.set('env', this.queryObj.params.env);
 
-		this.http.get(urls.reqXml, { params: parameters }).subscribe(res => {
+		this.http.get(this.reqXml, { params: parameters }).subscribe(res => {
 			console.log(res, "resssssssssssssssssssssssss-")
 
 			if (!res || !res['_source'] || res['StatusCode'] == 400) {
@@ -779,7 +793,7 @@ disableButtons(event){
 
 		console.log(parameters,"parametrssssssssss")
 
-		this.http.get(urls.exportUrl, { params: parameters }).subscribe(res => {
+		this.http.get(this.exportUrl, { params: parameters }).subscribe(res => {
 			console.log(res,"resss-export");
 		});
 
@@ -794,7 +808,7 @@ disableButtons(event){
 		var i=0;
 		var interval = setInterval(async () => {
 			//this.value = this.value + Math.floor(Math.random() * 10) + 1;
-			this.http.get(urls.exportStatus).subscribe(res => {
+			this.http.get(this.exportStatus).subscribe(res => {
 				this.value = res['status'];
 
 				if (res['status'] >= 100) {
@@ -848,7 +862,7 @@ disableButtons(event){
 	}
 
 	onFocusWd(e,wdModal){
-		if(this.selectedValue == "wdName"){
+		if(this.selectedValue == "wdName" && this.wdNameSelected){
 			this.openWdModal(wdModal);
 		}
 	}
@@ -856,22 +870,12 @@ disableButtons(event){
 	// wd name start here
 
 	onChangeWd(e,wdModal){
-			console.log(e.value);
+			this.wdNameSelected = false;
 			this.searchOnchagneValues = e.value;
 			if(this.searchOnchagneValues == "wdName"){
-				console.log(this.searchOnchagneValues,'searchOnchagneValues >>>>>>>>>>>>>>>>>>>');
 				 this.openWdModal(wdModal);
-			//	this.searchOnchagneValues = ''
-				console.log(this.searchOnchagneValues,"values of search");
-            }else{
-			   console.log('failed');
             }
     }
-
-    // openWdModel(e,wdModal){
-	// 	console.log('called from poen');
-    //     this.onChangeWd(e,wdModal);
-	// }
 
 	onchangeSearch(e){
 		console.log(e, "value of e");

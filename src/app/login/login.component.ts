@@ -2,7 +2,6 @@ import { Component, OnInit,Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders,HttpParams } from '@angular/common/http';
 let Cookies = require('js-cookie');
 import { Router } from "@angular/router";
-import { changeBaseUrl,baseurl, } from "../helpers";
 // import AWS object without services
 import * as AWS from 'aws-sdk/global';
 import * as xmlQueryToolAction from '../store/actions/xmlQueryTool.actions';
@@ -73,8 +72,8 @@ export class LoginComponent implements OnInit{
     }
     localStorage.setItem('UserPoolId', this.UserPoolId)
     localStorage.setItem('ClientId', this.ClientId)
+    localStorage.setItem('IdentityPoolId',this.IdentityPoolId);
     this.provider ="cognito-idp."+this.regionId+".amazonaws.com/"+this.UserPoolId
-    changeBaseUrl(env);
   }
   login() {
     this.isInvalid = false;
@@ -91,7 +90,7 @@ export class LoginComponent implements OnInit{
        .subscribe(data => {
          if (data && data['statusCode']=='200') {
 
-          this.cognitoAwsAmplify(false,this.userName,this.password,this.regionId,this.IdentityPoolId,this.UserPoolId,this.ClientId,false,
+          this.cognitoAwsAmplify("https://ms.myplace4parts.com/prod/xmlQueryTool",this.userName,this.password,this.regionId,this.IdentityPoolId,this.UserPoolId,this.ClientId,false,
             []);
 
             }
@@ -109,7 +108,7 @@ export class LoginComponent implements OnInit{
       this.isInvalid = true
      }
   }
-  cognitoAwsAmplify(isSignedIn,userName,password,regionId,identityPoolId,UserPoolId,ClientId,isStore,queryObj:{}){
+  cognitoAwsAmplify(baseurl,userName,password,regionId,identityPoolId,UserPoolId,ClientId,isStore,queryObj:{}){
 
     var poolData = {
       UserPoolId:UserPoolId, // Your user pool id here
