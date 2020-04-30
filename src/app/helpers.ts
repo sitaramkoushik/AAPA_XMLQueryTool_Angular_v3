@@ -1,15 +1,6 @@
 let Cookies = require('js-cookie');
-let baseurl = "https://ms.myplace4parts.com/prod/xmlQueryTool"
 //"build-prod": "ng build --base-href=/staging/xmlquerytool/ --deploy-url=/staging/xmlquerytool/ --prod && cp -r ./src/login ./dist",
-
-function signOut() {
-    signOutFromCognito();
-      //cognitoUser.globalSignOut(cognitoUser);
-   // Cookies.remove('xmlQueryToken')
-    localStorage.removeItem('userName')
-    window.location.reload()
-}
-function signOutFromCognito(){
+ function getCognitoUser(){
     var UserPoolId = localStorage.getItem('UserPoolId')
     var ClientId = localStorage.getItem('ClientId')
     var poolData = {
@@ -18,8 +9,35 @@ function signOutFromCognito(){
       };
       var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
       var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-      var cognitoUser = userPool.getCurrentUser();
+       return userPool.getCurrentUser();
+ }
+function signOut() {
+    var cognitoUser = getCognitoUser();
+    cognitoUser.signOut();
+   localStorage.clear();
+    window.location.reload()
+}
+function signOutFromCognito(){
+    
+    var cognitoUser = getCognitoUser();
       cognitoUser.signOut();
+      var username = localStorage.getItem('userName')
+    var ClientId = localStorage.getItem('ClientId')
+    var IdentityPoolId = localStorage.getItem('IdentityPoolId')
+    var commonvalue = `CognitoIdentityServiceProvider.${ClientId}.${username}`
+    removeLocalStorage(commonvalue,IdentityPoolId);
+}
+function removeLocalStorage(commonValue,IdentityPoolId){
+    localStorage.removeItem(commonValue+".idToken")
+    localStorage.removeItem(commonValue+".deviceKey")
+    localStorage.removeItem(commonValue+".clockDrift")
+    localStorage.removeItem(commonValue+".randomPasswordKey")
+    localStorage.removeItem(commonValue+".deviceGroupKey")
+    localStorage.removeItem(commonValue+".accessToken")
+    localStorage.removeItem(commonValue+".refreshToken")
+    localStorage.removeItem(commonValue+".LastAuthUser")
+    localStorage.removeItem("aws.cognito.identity-id."+IdentityPoolId)
+    localStorage.removeItem("aws.cognito.identity-providers."+IdentityPoolId)
 }
 function merge(arr1, arr2) {
     let flags = {};
@@ -37,24 +55,7 @@ function clearFilters() {
     window.location.reload()
 }
 
-function changeBaseUrl(env){
-    console.log(env,"env isssssssss")
-    if ( env == "STAGING") {
-        baseurl = "https://ms.myplace4parts.com/staging/xmlQueryTool"
-      }else if (env == "PROD") {
-        baseurl = "https://ms.myplace4parts.com/prod/xmlQueryTool"
-      }else if(env == "DEV") {
-        baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
-      }
-}
-export default {
-    tableData: baseurl + '/advSearch',
-    reqResp: baseurl + '/xmlReqResp',
-    reqXml: baseurl + '/xmlreqresfromEs',
-    exportUrl : baseurl + '/exportData',
-    exportStatus : baseurl + '/getStatus',
-    wdNames : baseurl + '/getWdNames'
-}
+
 export {
-    signOut, merge, clearFilters, signOutFromCognito, baseurl, changeBaseUrl
+    signOut, merge, clearFilters, signOutFromCognito
 }
