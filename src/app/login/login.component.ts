@@ -88,14 +88,14 @@ export class LoginComponent implements OnInit{
       this.getEnvProps(this.env);
       this.http.post(environment.login, {userName:this.userName,password:this.password} )
        .subscribe(data => {
-         if (data && data['statusCode']=='200') {
+         if (data && data['statusCode']=='200' && data['isHqUser']==true) {
 
           this.cognitoAwsAmplify("https://ms.myplace4parts.com/prod/xmlQueryTool",this.userName,this.password,this.regionId,this.IdentityPoolId,this.UserPoolId,this.ClientId,false,
             []);
 
             }
           else{
-            this.errorMsg = data['message'];
+            this.errorMsg = (data['isHqUser']==true)?data['message']:"Not a hq user";
             this.isInvalid = true
           }
         }, err => {

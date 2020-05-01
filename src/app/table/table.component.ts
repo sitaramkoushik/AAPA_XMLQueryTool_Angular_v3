@@ -19,6 +19,11 @@ import * as fromStore from '../store/reducers/index';
 import * as xmlQueryToolAction from '../store/actions/xmlQueryTool.actions';
 
 declare var _:any
+const Swal = require('sweetalert2')
+
+// import Swal from 'sweetalert2'
+
+// CommonJS
 
 @Component({
 	selector: 'aes-xml-query',
@@ -135,6 +140,7 @@ export class TableComponent implements OnInit {
 	}
 	ngOnInit() {
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
+		this.updateUrls("PROD");
 		this.login.getEnvProps("PROD");
 		let userName = localStorage.getItem('userName');
 		let password = localStorage.getItem('password');
@@ -363,7 +369,7 @@ disableButtons(event){
 		this.exportUrl = this.baseurl + '/exportData',
 		this.exportstatus = this.baseurl + '/getStatus',
 		this.wdNames = this.baseurl + '/getWdNames'
-		console.log("baseurl is::::",this.baseurl);
+		console.log("baseurl is::::",this.baseurl,this.reqXml);
 	}
 	getData() {
 		
@@ -437,27 +443,35 @@ disableButtons(event){
 	}
 
 	 reSearch() {
-		this.queryObj.params.start = 0
-		this.rows = []
-		this.rowCount = 0
-		this.disableButton = true;
-		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
-		if(this.isEnvchahnged){
-		signOutFromCognito();
-		this.login.getEnvProps(this.place)
-		console.log(this.place,"envvvvvvvvvv")
-		this.updateUrls(this.place);
-		let userName = localStorage.getItem('userName');
-		let password = localStorage.getItem('password');
-		console.log("username is",userName);
-		//signOutFromCognito();
-		this.login.cognitoAwsAmplify(this.baseurl,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
-		//this.getData()
+		let fromDate = new Date(this.startDate.year, this.startDate.month-1, this.startDate.day)
+		let toDate = new Date(this.endDate.year, this.endDate.month-1, this.endDate.day)
+		console.log(fromDate,"formdate is",toDate,"toDate is")
+		if(fromDate>toDate){
+			console.log("fromdate greater than todate")
+			Swal.fire({ text: "From date should be less than to date", type: 'warning', showCloseButton: true, showConfirmButton: false });
 		}else{
-			this.getData()
+			this.queryObj.params.start = 0
+			this.rows = []
+			this.rowCount = 0
+			this.disableButton = true;
+			this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
+			if(this.isEnvchahnged){
+			signOutFromCognito();
+			this.login.getEnvProps(this.place)
+			console.log(this.place,"envvvvvvvvvv")
+			this.updateUrls(this.place);
+			let userName = localStorage.getItem('userName');
+			let password = localStorage.getItem('password');
+			console.log("username is",userName);
+			//signOutFromCognito();
+			this.login.cognitoAwsAmplify(this.baseurl,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
+			//this.getData()
+			}else{
+				this.getData()
+			}
+			this.isEnvchahnged = false;
+			this.closeFilters()
 		}
-		this.isEnvchahnged = false;
-		this.closeFilters()
 	}
 
 	onActionChange(data) {
@@ -561,6 +575,7 @@ disableButtons(event){
 	}
 
 	OpenRequestResponse(data, content) {
+		console.log("OpenRequestResponse is calling")
 		this.searchValue = '';
 		this.lineCodeActive = '';
 		this.partNumberActive = 'active';
@@ -582,7 +597,7 @@ disableButtons(event){
 			.set('activityDate', year + month)
 			.set('xmlActivityId', row['id']);
 			//.set('env', this.queryObj.params.env);
-
+		console.log(this.reqXml,"reqXml is")
 		this.http.get(this.reqXml, { params: parameters }).subscribe(res => {
 			console.log(res, "resssssssssssssssssssssssss-")
 
@@ -888,6 +903,7 @@ disableButtons(event){
 	onChangePlace(e){
 	   this.place = e.label
 	   this.isEnvchahnged = true
+	   this.clearFilters();
 	}
 
 	onChangeSelectedWd(e,name){
