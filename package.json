@@ -65,6 +65,7 @@
     "protractor": "~5.4.0",
     "ts-node": "~7.0.1",
     "tslint": "~5.11.0",
+    "sweetalert2": "^7.33.1",
     "typescript": "~2.9.2",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
