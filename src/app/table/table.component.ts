@@ -813,16 +813,45 @@ disableButtons(event){
 		});
 
 		setTimeout(async () => {
+			//this.checkExportStatus()
 			this.getExportStatusPercentage();
 		},2000);
 
 	}
 
-	getExportStatusPercentage()
+	async getExportStatusPercentage()
 	{
 		var i=0;
+		let dataStatus = await this.http.get(this.exportstatus).toPromise();
 		var interval = setInterval(async () => {
 			//this.value = this.value + Math.floor(Math.random() * 10) + 1;
+			console.log(this.exportStatus,"exportstatus")
+			this.http.get(this.exportstatus).toPromise().then(res => {
+				console.log("success")
+				this.value = res['status'];
+
+				if (res['status'] >= 100) {
+					this.value = 100;
+					setTimeout(async () => {
+							this.displayExportButton = true
+							this.text = res['s3Url']
+							this.value = 0;
+					},2000);
+					clearInterval(interval);  // to stop the loop
+				}
+			}).catch(err => {
+				console.log("failure")
+				i++;
+				if(i>5)
+				{
+					this.displayExportButton = true
+					this.text = ''
+					this.value = 0;
+					clearInterval(interval);
+					this.timeOutError('Something went worng,Please try again...');
+				}
+			})
+
 			this.http.get(this.exportStatus).subscribe(res => {
 				this.value = res['status'];
 
