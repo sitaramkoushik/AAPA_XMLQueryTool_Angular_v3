@@ -39,6 +39,7 @@ export class LoginComponent implements OnInit{
   IdentityPoolId = ''
   env = '';
   successOrFailure:boolean;
+  loading:boolean = false
   ngOnInit() {
     console.log("lol")
 
@@ -82,6 +83,7 @@ export class LoginComponent implements OnInit{
     }
 
     if ((this.userName && this.userName.length) && (this.password && this.password.length)) {
+      this.loading = true;
       let parameters = new HttpParams()
 			.set('screenName', this.userName)
 			.set('password', this.password);
@@ -156,6 +158,7 @@ onSuccess: function(result) {
       // Instantiate aws sdk service objects now that the credentials have been updated.
       // example: var s3 = new AWS.S3();
       console.log('Successfully logged!');
+
       //Cookies.set('xmlQueryToken',result.getIdToken().getJwtToken());
       localStorage.setItem('userName', userName)
       localStorage.setItem('password', password)
@@ -172,6 +175,7 @@ onSuccess: function(result) {
           self.disableButtons.emit(false);
         })
       }
+      this.loading = false;
       self.router.navigate(['']);
     }
   });
