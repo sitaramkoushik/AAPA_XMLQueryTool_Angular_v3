@@ -30,7 +30,6 @@ export class GuestGuard implements CanActivate, CanActivateChild {
     let userName = localStorage.getItem('userName');
     let idToken = "CognitoIdentityServiceProvider."+ClientId+"."+userName+".idToken"
     let authHeader = localStorage.getItem(idToken);
-    console.log(authHeader,"authHeader is")
         if (authHeader!=null) {
             this.router.navigate(['/']);
             return true
