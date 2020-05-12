@@ -113,7 +113,7 @@ export class TableComponent implements OnInit {
 	wdNameSelected: boolean = true;
 	modelref: any
 	originalData: any
-	//loading:boolean = false;
+	loading:boolean = false;
 	/**
 	 * Methods
 	 */
@@ -459,8 +459,15 @@ disableButtons(event){
 
 	 reSearch() {
 		// this.loading = true
-		let fromDate = new Date(this.startDate.year, this.startDate.month-1, this.startDate.day)
-		let toDate = new Date(this.endDate.year, this.endDate.month-1, this.endDate.day)
+		let fromDate:any = new Date(this.startDate.year, this.startDate.month-1, this.startDate.day)
+		let toDate:any = new Date(this.endDate.year, this.endDate.month-1, this.endDate.day)
+		console.log(this.queryObj.params.searchKey)
+		console.log(this.queryObj.params.searchKey.indexOf("created:["))
+		if(this.queryObj.params.searchKey.indexOf("created:[")==-1){
+			console.log("created contains")
+			this.queryObj.params.dateFrom = ''
+			this.queryObj.params.dateTo = ''
+		}
 		if(fromDate>toDate){
 			Swal.fire({ text: "From date should be less than to date", type: 'warning', showCloseButton: true, showConfirmButton: false });
 		}else{
