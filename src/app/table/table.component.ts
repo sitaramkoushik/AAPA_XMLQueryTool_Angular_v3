@@ -89,7 +89,7 @@ export class TableComponent implements OnInit {
 	endDate: RequestDateInterface = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
 	userName: String = ''
 	debounced = debounce(() => {
-		console.log('get new data')
+		console.log("debounce called")
 		this.getMoreData()
 	}, 300)
 	selectedColumnID = 0
@@ -112,6 +112,8 @@ export class TableComponent implements OnInit {
 	baseurl: any;
 	wdNameSelected: boolean = true;
 	modelref: any
+	originalData: any
+	//loading:boolean = false;
 	/**
 	 * Methods
 	 */
@@ -136,15 +138,14 @@ export class TableComponent implements OnInit {
 	closeDialogue(){
 		this.wdNameSelected = true
 		this.modelref.close();
-		console.log("close clicked")
 	}
 	ngOnInit() {
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
+		//this.loading = true;
 		this.updateUrls("PROD");
 		this.login.getEnvProps("PROD");
 		let userName = localStorage.getItem('userName');
 		let password = localStorage.getItem('password');
-		console.log("username is",userName);
 		//signOutFromCognito();
 		this.login.cognitoAwsAmplify("https://ms.myplace4parts.com/prod/xmlQueryTool",userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
 
@@ -169,15 +170,25 @@ export class TableComponent implements OnInit {
 	}
 
 	tablesData(res){
+		this.rows = []
+			this.rowCount = 0
 			this.rows = [...this.rows, ...res['data']]
 					this.rowCount = res['numResults']
+					//this.loading = false;
 					this.loadingIndicator = false
 					this.tableMessages.emptyMessage = `<div class="text-center">No Data Avaliable</div>`
 					if (res['data'].length) {
-						this.checkIfScrollable()
+						//this.checkIfScrollable()
 					}
 	}
+	displayErrorMsg(res){
+		//this.loading = data.isLoading
+		this.rows = [...this.rows, ...this.originalData['data']]
+		this.rowCount = this.originalData['numResults']
+		this.disableButton = res['disablebuttons']
+		Swal.fire({ text: res.message, type: 'warning', showCloseButton: true, showConfirmButton: false });
 
+	}
 disableButtons(event){
 	this.disableButton = event
 }
@@ -205,16 +216,11 @@ disableButtons(event){
 
 		// let dataStatus= await this.http.get(urls.wdNames , { data : name }).toPromise();
 
-		// console.log(dataStatus, "dataStatus >>>>>>>>>>>");
-
-
     //  let name = "dev"
 	// 	this.http.get(urls.wdNames,{data:name})
 	// 	 .subscribe(data =>{
-	// 		 console.log(data ,"data >>>>>");
 
 	// 		//   if(data && data['statusCode']=='200'){
-	// 		// 	 console.log('sucess');
 
 	// 		//  }
 	// 	 })
@@ -233,12 +239,10 @@ disableButtons(event){
 	// 		  localStorage.setItem('userName', this.userName)
 	// 		}
 	// 		else{
-	// 		  console.log(data['message'],"else----errrrrrrrrr")
 	// 		  this.errorMsg = data['message'];
 	// 		  this.isInvalid = true
 	// 		}
 	// 	  }, err => {
-	// 		console.log(err,"errrrrrrrrr")
 	// 		this.errorMsg = 'Failed to connect to a  service'
 	// 		this.isInvalid = true
 	// 	  })
@@ -258,6 +262,7 @@ disableButtons(event){
 		this.startDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
 		this.endDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
 		this.queryObj = cloneDeep(baseObject)
+		this.getData();
 	}
 
 
@@ -337,7 +342,6 @@ disableButtons(event){
 	}
 
 	closeFilters() {
-		console.log("close filter")
 		this.stickyRef.nativeElement.classList.add("sticked")
 		this.stickyRef.nativeElement.classList.add("text-primary")
 
@@ -355,7 +359,6 @@ disableButtons(event){
 		  });
 	}
 	updateUrls(env){
-			console.log(env,"env isssssssss")
 			 if ( env == "STAGING") {
 				this.baseurl = "https://ms.myplace4parts.com/staging/xmlQueryTool"
 			  }else if (env == "PROD") {
@@ -369,12 +372,12 @@ disableButtons(event){
 		this.exportUrl = this.baseurl + '/exportData',
 		this.exportstatus = this.baseurl + '/getStatus',
 		this.wdNames = this.baseurl + '/getWdNames'
-		console.log("baseurl is::::",this.baseurl,this.reqXml);
 	}
 	getData() {
-		
+
 		this.loadingIndicator = false
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
+		//this.loading = true
 		let newParams = {
 			dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
 			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '',
@@ -388,15 +391,19 @@ disableButtons(event){
 
 			if (!res || !res['data']) {
 				this.disableButton = false;
+				//this.loading = false
 				alert('Something wrong')
 				return
 			}
+			this.originalData = _.cloneDeep(res)
 			this.store.dispatch(new xmlQueryToolAction.StoreTableData(res));
 			this.tablesData(res);
+			//this.loading = false
 
 		}, err => {
 			this.rows = []
 			this.disableButton = false;
+		//	this.loading = false
 			this.loadingIndicator = false
 			this.tableMessages.emptyMessage = '<div class="text-center">No Data Avaliable</div>'
 			if (err) {
@@ -426,6 +433,7 @@ disableButtons(event){
 	onReorder() {
 		setTimeout(() => {
 			let columns = this.xmlTableRef.headerComponent.columns
+			let newColumns = []
 			columns = columns.map(item => {
 				if (item.name) {
 					return {
@@ -437,19 +445,26 @@ disableButtons(event){
 					return null
 				}
 			}).filter(item => item)
+			// columns.map(item =>{
+			// 	if(item.name){
+			// 		newColumns.push({'name': item.name,'width': item.width,'visible': true})
+			// 	}else{
+			// 		newColumns.unshift({'name': item.name,'width': item.width,'visible': true})
+			// 	}
+			// })
 			let finalArr = merge(columns, this.visibleColumns)
 			this.setSelectedColumns(finalArr)
 		})
 	}
 
 	 reSearch() {
+		// this.loading = true
 		let fromDate = new Date(this.startDate.year, this.startDate.month-1, this.startDate.day)
 		let toDate = new Date(this.endDate.year, this.endDate.month-1, this.endDate.day)
-		console.log(fromDate,"formdate is",toDate,"toDate is")
 		if(fromDate>toDate){
-			console.log("fromdate greater than todate")
 			Swal.fire({ text: "From date should be less than to date", type: 'warning', showCloseButton: true, showConfirmButton: false });
 		}else{
+			//this.queryObj.params.queryType = this.searchOnchagneValues
 			this.queryObj.params.start = 0
 			this.rows = []
 			this.rowCount = 0
@@ -458,11 +473,9 @@ disableButtons(event){
 			if(this.isEnvchahnged){
 			signOutFromCognito();
 			this.login.getEnvProps(this.place)
-			console.log(this.place,"envvvvvvvvvv")
 			this.updateUrls(this.place);
 			let userName = localStorage.getItem('userName');
 			let password = localStorage.getItem('password');
-			console.log("username is",userName);
 			//signOutFromCognito();
 			this.login.cognitoAwsAmplify(this.baseurl,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
 			//this.getData()
@@ -521,8 +534,7 @@ disableButtons(event){
 	}
 
 	dataOpen(data, content) {
-		this.selectedColumnID = data,
-		console.log(this.selectedColumnID,"column data >>>>>>>>>>>>>>>>>>>>>>>>>");
+		this.selectedColumnID = data
 
 		let row = this.rows.find((item) => item['id'] == data)
 		let rowKeys = Object.keys(row)
@@ -533,10 +545,6 @@ disableButtons(event){
 		}
 		this.selectedColumnData = newRow
 		// let dataInfo[] = this.selectedColumnData;
-		console.log(this.selectedColumnData,"selectedColumnData data >>>>>>>>>>>>>>>>>>>>>>>>>");
-
-
-
 		this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', size: 'lg', windowClass: 'detailed-popup scrollable' })
 	}
 
@@ -567,7 +575,6 @@ disableButtons(event){
 				return
 			}
 			this.reqResp = res
-			console.log(this.reqResp, "reqResp")
 		}, err => {
 			err.name == 'TimeoutError' ? this.timeOutError('Request TimeOut') : '';
 		})
@@ -575,7 +582,6 @@ disableButtons(event){
 	}
 
 	OpenRequestResponse(data, content) {
-		console.log("OpenRequestResponse is calling")
 		this.searchValue = '';
 		this.lineCodeActive = '';
 		this.partNumberActive = 'active';
@@ -597,9 +603,7 @@ disableButtons(event){
 			.set('activityDate', year + month)
 			.set('xmlActivityId', row['id']);
 			//.set('env', this.queryObj.params.env);
-		console.log(this.reqXml,"reqXml is")
 		this.http.get(this.reqXml, { params: parameters }).subscribe(res => {
-			console.log(res, "resssssssssssssssssssssssss-")
 
 			if (!res || !res['_source'] || res['StatusCode'] == 400) {
 				this.ReloadingIndicator = false;
@@ -769,7 +773,6 @@ disableButtons(event){
 
 		if(dataStatus!=null && dataStatus['statusCode']==100)  //completed
 		{
-			console.log(this.text, "dataStatus-s3url")
 			this.displayExportButton = true
 		}
 		else if(dataStatus!=null && dataStatus['statusCode']==101)  // running
@@ -805,11 +808,7 @@ disableButtons(event){
 		.set('headers', (this.optradio==1)?allAvailableCols.toString():displayedColumns.toString())
 		.set('dateFrom', this.queryObj.params.dateFrom)
 		.set('dateTo',this.queryObj.params.dateTo);
-
-		console.log(parameters,"parametrssssssssss")
-
 		this.http.get(this.exportUrl, { params: parameters }).subscribe(res => {
-			console.log(res,"resss-export");
 		});
 
 		setTimeout(async () => {
@@ -825,9 +824,7 @@ disableButtons(event){
 		let dataStatus = await this.http.get(this.exportstatus).toPromise();
 		var interval = setInterval(async () => {
 			//this.value = this.value + Math.floor(Math.random() * 10) + 1;
-			console.log(this.exportStatus,"exportstatus")
 			this.http.get(this.exportstatus).toPromise().then(res => {
-				console.log("success")
 				this.value = res['status'];
 
 				if (res['status'] >= 100) {
@@ -921,14 +918,6 @@ disableButtons(event){
             }
     }
 
-	onchangeSearch(e){
-		console.log(e, "value of e");
-    }
-
-
-
-
-
 	onChangePlace(e){
 	   this.place = e.label
 	   this.isEnvchahnged = true
@@ -936,25 +925,19 @@ disableButtons(event){
 	}
 
 	onChangeSelectedWd(e,name){
-		console.log(e,name,"value of check box");
          // this.checkData.map(item=>{
 				if(e == true){
 					this.checkData.push(name.label);
-					// console.log(newArray, "new array at true");
 				}else{
 					this.checkData.forEach(item=>{
 				         if(item != name.label){
 							this.newArray.push(item);
 						 }
 					});
-					console.log(this.newArray,"ndndndndndnn");
-
 					this.checkData=[];
 					this.checkData=this.newArray;
 				}
 			// })
-				console.log(this.checkData,'chedkdkdkdkddkdk')
-            //  console.log(this.checkData,"chcek data");
 	   }
 
 	submitWdname(){
@@ -965,15 +948,12 @@ disableButtons(event){
 			  arrayofData.push("wdName:"+JSON.stringify(item));
 
 		  })
-		  console.log(arrayofData.join(","),"stingiful");
-		  console.log(this.checkData.join(","),"original");
-
 		 this.queryObj.params.searchKey = arrayofData.join(" OR ");
-		 console.log(this.autoFillQueryData, "auto fill");
 		 this.modalService.dismissAll();
 		 this.checkData=[];
 		 this.wdNamesData=[]
 		//  this.queryTypeData=[];
+		this.wdNameSelected = true;
 	}
 
 }

@@ -6,55 +6,96 @@ import {
   HttpHandler,
   HttpRequest,
   HttpResponse,
-  HttpErrorResponse
+  HttpErrorResponse,
+  HttpSentEvent,
+  HttpHeaderResponse,
+  HttpProgressEvent,
+  HttpUserEvent
 } from '@angular/common/http';
-import { throwError as observableThrowError, Observable } from 'rxjs';
-import { map, catchError, timeout } from 'rxjs/operators';
+
+import { refreshTokens,cognitoAwsAmplify } from "../helpers";
+import { throwError as observableThrowError, Observable, BehaviorSubject } from 'rxjs';
+import {  catchError, map, timeout, delay } from 'rxjs/operators';
+
 
 import {
   Router
 } from '@angular/router';
-import { signOut } from "../helpers"
-let Cookies = require('js-cookie');
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(private router: Router) { }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpSentEvent | HttpHeaderResponse | HttpProgressEvent | HttpResponse<any> | HttpUserEvent<any>> {
     //Get the auth header from the service.
     var ClientId = localStorage.getItem('ClientId')
     let userName = localStorage.getItem('userName');
+    let password = localStorage.getItem('password');
+    var IdentityPoolId = localStorage.getItem('IdentityPoolId')
+    var UserPoolId = localStorage.getItem('UserPoolId')
+    var regionId = localStorage.getItem('regionId')
+    let authHeader = ''
     let idToken = "CognitoIdentityServiceProvider."+ClientId+"."+userName+".idToken"
-    console.log(idToken,"idToken is")
-    let authHeader = localStorage.getItem(idToken) || '';
-    console.log("authHeader",authHeader);
-     //const authHeader = Cookies.get('xmlQueryToken') || ''
-    // Clone the request to add the new header.
-    let authReq:any
-
-      authReq = req.clone({ headers: req.headers.set('Authorization', authHeader) });
-
-    // Pass on the cloned request instead of the original request.
-    return next.handle(authReq).pipe(map((event: HttpEvent<any>) => {
-      // console.info('HttpResponse::event =', event, ';');
-      // if (event instanceof HttpResponse && ~~(event.status / 100) > 3) {
-      //   console.info('HttpResponse::event =', event, ';');
-      // } else console.info('event =', event, ';');
-      return event;
-    }), timeout(15000), catchError((err) => {
-      console.log(err, "errr-interceptor")
-      // do something on a timeout
-      return observableThrowError(err);
-    })).pipe(catchError((err: any, caught) => {
-      if (err instanceof HttpErrorResponse) {
-        if (err.error.error && (err.error.error === 'Token Not Valid')) {
-          console.log('logout user')
-          signOut()
-          // this.router.navigate(['/login']);
+    authHeader = (localStorage.getItem(idToken))!=null?localStorage.getItem(idToken):'' ;
+       if(!req.url.includes("userLogin")){
+      // if(authHeader==null && ClientId && userName && IdentityPoolId && UserPoolId && regionId && password ){
+      //   cognitoAwsAmplify(userName,password,regionId,IdentityPoolId,UserPoolId,ClientId)
+      // }else if(authHeader &&( !ClientId || !userName || !IdentityPoolId || !UserPoolId || !regionId || !password)){
+      //   this.router.navigate(['/login']);
+      // }
+    if(authHeader!=null){
+      let kid
+      let refresh = false
+      try {
+        kid = JSON.parse(atob(authHeader.split('.')[0])).kid;
+      } catch (error) {
+        console.log(error)
+        refresh = true
+      }
+      if(refresh){
+        refreshTokens();
+      }else {
+        var expTime = JSON.parse(atob(authHeader.split('.')[1])).exp;
+        var expDate = new Date(((expTime*1000)-(2*60*1000)));
+        var curDate = new Date();
+        console.log(expDate,curDate)
+        if(curDate>expDate){
+          console.log("token expired")
+          refreshTokens();
+        }else {
+          console.log("token valid")
         }
       }
-      return observableThrowError(err);
+  }
+   req = req.clone({ headers: req.headers.set('Authorization', authHeader) });
+ }
+     //const authHeader = Cookies.get('xmlQueryToken') || ''
+    // Clone the request to add the new header.
+      return next.handle(req).pipe(catchError(err => {
+        console.log(err);
+        if (err.status === 401) {
+          //if (err.error.message == "The incoming token has expired") {
+              authHeader = localStorage.getItem(idToken);
+              req = req.clone({ headers: req.headers.set('Authorization', authHeader) });
+              return next.handle(req).pipe(catchError(error => {
+                console.log(error,"error iss")
+                //let interval = setInterval(()=>{
+                 // authHeader = localStorage.getItem(idToken);
+                  //  clearInterval(interval);
+                    // req = req.clone({ headers: req.headers.set('Authorization', authHeader) });
+                    // return next.handle(req).pipe(delay(5000),catchError(e=>{
+                    //   return observableThrowError(error);
+                    // }));
+              //  },1000)
+
+                        return observableThrowError(error);
+              }));
+
+          // }else {
+          //   //Logout from account or do some other stuff
+          // }
+        }
+        return observableThrowError(err);
     }));
   }
 }

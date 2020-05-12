@@ -23,6 +23,8 @@ declare var window: any
 export class LoginComponent implements OnInit{
   @Output() tablesData: EventEmitter<any> = new EventEmitter();
   @Output() disableButtons: EventEmitter<any> = new EventEmitter();
+  @Output() dataMessage: EventEmitter<any> = new EventEmitter();
+
   provider;
   isSignOut: boolean = false;
   cognitoUser: any;
@@ -41,37 +43,32 @@ export class LoginComponent implements OnInit{
   successOrFailure:boolean;
   loading:boolean = false
   ngOnInit() {
-    console.log("lol")
-
 
   }
      getEnvProps(env){
     if(env == "DEV") {
-      console.log("dev")
       this.UserPoolId = 'us-east-1_q38uYDTHa'
       this.ClientId = '3dn006e20aft7s75ijam0bmsuf'
       this.regionId = 'us-east-1'
       this.IdentityPoolId = 'us-east-1:6a44e2cf-b89e-4ad0-abaa-49dba53f8dd0'
     }else if ( env == "STAGING") {
-      console.log("staging")
       this.UserPoolId = 'us-east-1_EG7QRM8Ej'
       this.ClientId = '2f5d4qjvsmqu9cgroea9mokgia'
       this.regionId = 'us-east-1'
       this.IdentityPoolId = 'us-east-1:53807951-c2ed-45bf-a71e-9ea521b6afe8'
     } else if (env == "PROD") {
-      console.log("prod")
       this.UserPoolId = 'us-east-1_nMzI8o7iu'
       this.ClientId = '5r283s0pt9cl41vc0v1mrj0bb2'
       this.regionId = 'us-east-1'
       this.IdentityPoolId = 'us-east-1:34dfed7e-1ec4-443c-bd23-c308aed829c0'
     } else {
-      console.log("prod else")
       this.UserPoolId = 'us-east-1_nMzI8o7iu'
       this.ClientId = '5r283s0pt9cl41vc0v1mrj0bb2'
       this.regionId = 'us-east-1'
       this.IdentityPoolId = 'us-east-1:34dfed7e-1ec4-443c-bd23-c308aed829c0'
     }
     localStorage.setItem('UserPoolId', this.UserPoolId)
+    localStorage.setItem('regionId',this.regionId );
     localStorage.setItem('ClientId', this.ClientId)
     localStorage.setItem('IdentityPoolId',this.IdentityPoolId);
     this.provider ="cognito-idp."+this.regionId+".amazonaws.com/"+this.UserPoolId
@@ -84,9 +81,7 @@ export class LoginComponent implements OnInit{
 
     if ((this.userName && this.userName.length) && (this.password && this.password.length)) {
       this.loading = true;
-      let parameters = new HttpParams()
-			.set('screenName', this.userName)
-			.set('password', this.password);
+
       this.getEnvProps(this.env);
       this.http.post(environment.login, {userName:this.userName,password:this.password} )
        .subscribe(data => {
@@ -99,10 +94,13 @@ export class LoginComponent implements OnInit{
           else{
             this.errorMsg = (data['isHqUser']==true)?data['message']:"Not a hq user";
             this.isInvalid = true
+            this.loading = false
+
           }
         }, err => {
           this.errorMsg = 'Failed to connect to a  service'
           this.isInvalid = true
+          this.loading = false
         })
     }
     else {
@@ -116,9 +114,9 @@ export class LoginComponent implements OnInit{
       UserPoolId:UserPoolId, // Your user pool id here
       ClientId: ClientId, // Your client id here
     };
+    var completed = false
     var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
     var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-    console.log("userpool is",userPool);
 
     var userData = {
       Username: userName,
@@ -127,8 +125,6 @@ export class LoginComponent implements OnInit{
 
      this.cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
-    console.log(userName,password);
-console.log("cognitoUser",this.cognitoUser);
 var authenticationData = {
 Username: userName,
 Password: password,
@@ -153,19 +149,18 @@ onSuccess: function(result) {
 ( < AWS.CognitoIdentityCredentials > AWS.config.credentials).refresh((error) => {
 
     if (error) {
-      console.error(error);
+      console.error(error,"ERRRORROROROROROR",result);
     } else {
       // Instantiate aws sdk service objects now that the credentials have been updated.
       // example: var s3 = new AWS.S3();
       console.log('Successfully logged!');
-
+      completed = true
       //Cookies.set('xmlQueryToken',result.getIdToken().getJwtToken());
       localStorage.setItem('userName', userName)
       localStorage.setItem('password', password)
-      if(isStore){
+      if(completed){
         self.http.get(baseurl + '/advSearch', queryObj).subscribe(res => {
           this.loadingIndicator = false
-
           if (!res || !res['data']) {
             alert('Something wrong')
             return
@@ -187,6 +182,7 @@ onSuccess: function(result) {
 //	onFailure: function(err) {
 onFailure: (err)=> {
   console.log("data mismatch",err.message || JSON.stringify(err))
+  self.dataMessage.emit({"message":err.message,"isLoading":false,"disablebuttons":false})
   this.errorMsg = err.message
    this.isInvalid = true
 },

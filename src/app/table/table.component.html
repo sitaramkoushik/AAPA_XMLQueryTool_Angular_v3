@@ -20,6 +20,7 @@
             </div>
         </div>
 
+        <span *ngIf='loading' class="pi pi-spin pi-spinner"></span>
 
         <div class="header col-12 form-horizontal p-0" (mouseover)="toggleFilters3()" (mouseout)="toggleFilters4()">
             <div class="search-top">
@@ -36,7 +37,7 @@
                                 <!--[(ngModel)]="queryObj['params']['env']"-->
                                 <div class="col-sm-offset-1">
                                     <ng-select [items]="envData" [searchable]="false" [clearable]="false"
-                                    [(ngModel)]="place" 
+                                    [(ngModel)]="place"
                                     (change)="onChangePlace($event)"
                                     >
                                     </ng-select>
@@ -150,7 +151,8 @@
         <ngx-datatable #xmlTable class="material xml-query-tool" [rows]="rows" [count]="rowCount" [externalPaging]="true" [rowHeight]="'auto'"
             [reorderable]="true" columnMode="force" [headerHeight]="50" [footerHeight]="0" [virtualization]="false" [scrollbarH]="true"
             [messages]="tableMessages" (reorder)="onReorder()" (resize)="onReorder()">
-            <ngx-datatable-column name="" sortable="false" prop="id" [width]="105">
+            <!--<ngx-datatable-column name="" sortable="false" prop="id" [width]="105">-->
+                <ngx-datatable-column name="" sortable="false" [width]="105">
                 <ng-template let-row="data" let-value="value" ngx-datatable-cell-template>
                         <button class="cell-btn bg-transparent mr-1 mb-1" (click)="dataOpen(value,columnDataContent)">D</button>
                         <button class="cell-btn bg-transparent mr-1 mb-1" (click)="reqRespOpen(value,reqrespContent)">R</button>
@@ -688,5 +690,6 @@
 <login #login
 (tablesData)= "tablesData($event)"
 (disableButtons)="disableButtons($event)"
+(dataMessage)="displayErrorMsg($event)"
 ></login>
 </div>
