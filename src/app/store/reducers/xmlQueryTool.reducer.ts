@@ -4,24 +4,24 @@ import { XmlQueryToolActionTypes, xmlQueryToolAction } from '../actions/xmlQuery
 export const programFeatureKey = 'xmlQueryTool';
 
 export interface State {
-  tableData: any;
+  cognitoDetails: any;
 
 
 }
 
 export const initialState: State = {
 
-  tableData: {},
+  cognitoDetails: {},
 
 };
 
 export function reducer(state = initialState, action: xmlQueryToolAction): State {
   switch (action.type) {
-    case XmlQueryToolActionTypes.StoreTableData:
-      return { ...state, tableData: action.tableData }
+    case XmlQueryToolActionTypes.StoreCognitoDetails:
+      return { ...state, cognitoDetails: action.cognitoDetails }
     default:
       return state;
   }
 }
 
-export const getTableData = (state: State) => state.tableData;
+export const getCognitoDetails = (state: State) => state.cognitoDetails;

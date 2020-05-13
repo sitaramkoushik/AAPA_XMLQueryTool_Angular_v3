@@ -17,7 +17,7 @@ let baseObject: BaseObjectInterface = {
 	params: {
 		searchKey: '',
 		count: 20,
-		
+
 		queryType: '',
 		start: 0,
 		action: '',
@@ -59,6 +59,7 @@ let actionData = [
 	{ value: 'RET', label: 'RET' },
 	{ value: 'RFQ', label: 'RFQ' },
 ]
+ let secretKey = "xmlQueryTool";
 
 export {
 	allCols,
@@ -68,7 +69,8 @@ export {
 	queryTypeData,
 	actionData,
 	defaultRowData,
-	wdNameData
+	wdNameData,
+	secretKey
 }
 
 export interface BaseObjectInterface {

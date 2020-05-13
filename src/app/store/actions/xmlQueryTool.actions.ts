@@ -1,17 +1,17 @@
 import { Action } from '@ngrx/store';
 
 export enum XmlQueryToolActionTypes {
-  StoreTableData = '[Program] Store Table Data',
+  StoreCognitoDetails = '[Program] Store Table Data',
 
 }
 
-export class StoreTableData implements Action {
+export class StoreCognitoDetails implements Action {
   constructor(
-    public tableData: any
+    public cognitoDetails: any
   ) { }
-  readonly type = XmlQueryToolActionTypes.StoreTableData;
+  readonly type = XmlQueryToolActionTypes.StoreCognitoDetails;
 }
-export type xmlQueryToolAction = StoreTableData;
+export type xmlQueryToolAction = StoreCognitoDetails;
 
 
 

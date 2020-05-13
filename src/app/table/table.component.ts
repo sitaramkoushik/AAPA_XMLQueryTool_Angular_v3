@@ -5,10 +5,10 @@ import {
 } from '@angular/forms'
 import { HttpClient, HttpParams } from '@angular/common/http'
 //import urls from '../routes/urls'
-import { signOut, merge, signOutFromCognito } from '../helpers'
+import { signOut, merge, signOutFromCognito,decrypt } from '../helpers'
 import { debounce } from 'lodash'
 import { NgbModal, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap'
-import { allCols,wdNameData, allAvailableCols, baseObject, envData, queryTypeData, actionData, defaultRowData, BaseObjectInterface, RequestDateInterface } from './data'
+import { allCols,wdNameData, allAvailableCols, baseObject, envData, queryTypeData, actionData, defaultRowData, BaseObjectInterface, RequestDateInterface,secretKey } from './data'
 import { DatatableComponent } from "@swimlane/ngx-datatable";
 import { TreeNode } from 'primeng/api';
 import { cloneDeep } from "lodash";
@@ -17,7 +17,7 @@ import { LoginComponent } from "../login/login.component";
 import { Store } from '@ngrx/store';
 import * as fromStore from '../store/reducers/index';
 import * as xmlQueryToolAction from '../store/actions/xmlQueryTool.actions';
-
+import * as CryptoJS from 'crypto-js';
 declare var _:any
 const Swal = require('sweetalert2')
 
@@ -65,12 +65,12 @@ export class TableComponent implements OnInit {
 	displayExportButton: Boolean = true
 	autoFillQueryData: Array<String>
 	visibleColumns
+	cognitoDetails:any
 	tableMessages: any = {
 		emptyMessage: `<div class="text-center">No Data Available</div>`
 	}
 	place='PROD'
 	selectedColumnData = {}
-	signOut = signOut
 	rowCount = 0
 	wdNamesService=[]
 	checkData=[]
@@ -128,6 +128,7 @@ export class TableComponent implements OnInit {
 	) {
 
 		ngbDatepickerConfig.firstDayOfWeek = 7;
+
 	 }
 
 	searchKeyEvent(evt: KeyboardEvent) {
@@ -144,8 +145,13 @@ export class TableComponent implements OnInit {
 		//this.loading = true;
 		this.updateUrls("PROD");
 		this.login.getEnvProps("PROD");
-		let userName = localStorage.getItem('userName');
-		let password = localStorage.getItem('password');
+		this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
+			if(res){
+				this.cognitoDetails = res;
+			}
+		})
+		let userName =decrypt(localStorage.getItem('uno'));
+		let password = decrypt(localStorage.getItem('unokey'));
 		//signOutFromCognito();
 		this.login.cognitoAwsAmplify("https://ms.myplace4parts.com/prod/xmlQueryTool",userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
 
@@ -153,7 +159,7 @@ export class TableComponent implements OnInit {
 		this.getSelectedColumns()
 		let data = localStorage.getItem('autoFillQueryData')
 		this.autoFillQueryData = JSON.parse(data)
-		this.userName = localStorage.getItem('userName')
+		this.userName =decrypt(localStorage.getItem('uno'))
 		let timeFormat = localStorage.getItem('timeFormat')
 		if (timeFormat) {
 			this.timeFormat = timeFormat
@@ -168,6 +174,10 @@ export class TableComponent implements OnInit {
 
 
 	}
+	signOut(){
+		signOut(this.cognitoDetails)
+	}
+
 
 	tablesData(res){
 		this.rows = []
@@ -212,48 +222,7 @@ disableButtons(event){
 				}
 
 
-
-
-		// let dataStatus= await this.http.get(urls.wdNames , { data : name }).toPromise();
-
-    //  let name = "dev"
-	// 	this.http.get(urls.wdNames,{data:name})
-	// 	 .subscribe(data =>{
-
-	// 		//   if(data && data['statusCode']=='200'){
-
-	// 		//  }
-	// 	 })
-
-
-
-
-	// if ((this.userName && this.userName.length) && (this.password && this.password.length)) {
-
-	// 	this.http.post(urls.loginUrl, {userName:this.userName,password:this.password})
-	// 	  .subscribe(data => {
-	// 		if (data && data['statusCode']=='200') {
-	// 		  Cookies.set('xmlQueryToken', data['jwtToken']);
-	// 		  this.router.navigate(['']);
-
-	// 		  localStorage.setItem('userName', this.userName)
-	// 		}
-	// 		else{
-	// 		  this.errorMsg = data['message'];
-	// 		  this.isInvalid = true
-	// 		}
-	// 	  }, err => {
-	// 		this.errorMsg = 'Failed to connect to a  service'
-	// 		this.isInvalid = true
-	// 	  })
-	//   } else {
-	// 	this.errorMsg = 'Please Enter Username and Password'
-	// 	this.isInvalid = true
-	//   }
-
-
-
-	clearFilters() {
+	clearFilters(clearFilters=true) {
 	//	this.rows = []
 	//	this.rowCount = 0
 		this.selectedAction = '';
@@ -262,7 +231,9 @@ disableButtons(event){
 		this.startDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
 		this.endDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
 		this.queryObj = cloneDeep(baseObject)
-		this.getData();
+		if(clearFilters){
+			this.getData();
+		}
 	}
 
 
@@ -382,6 +353,13 @@ disableButtons(event){
 			dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
 			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '',
 		}
+		if(this.queryObj.params.searchKey.indexOf("created:[")!=-1){
+			newParams = {
+				dateFrom:'',
+				dateTo:''
+			}
+		}
+
 
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }
 		// @ts-ignore
@@ -396,7 +374,6 @@ disableButtons(event){
 				return
 			}
 			this.originalData = _.cloneDeep(res)
-			this.store.dispatch(new xmlQueryToolAction.StoreTableData(res));
 			this.tablesData(res);
 			//this.loading = false
 
@@ -461,16 +438,12 @@ disableButtons(event){
 		// this.loading = true
 		let fromDate:any = new Date(this.startDate.year, this.startDate.month-1, this.startDate.day)
 		let toDate:any = new Date(this.endDate.year, this.endDate.month-1, this.endDate.day)
-		console.log(this.queryObj.params.searchKey)
-		console.log(this.queryObj.params.searchKey.indexOf("created:["))
-		if(this.queryObj.params.searchKey.indexOf("created:[")==-1){
-			console.log("created contains")
-			this.queryObj.params.dateFrom = ''
-			this.queryObj.params.dateTo = ''
-		}
-		if(fromDate>toDate){
+
+
+		if(this.queryObj.params.searchKey.indexOf("created:[")==-1 && fromDate>toDate){
 			Swal.fire({ text: "From date should be less than to date", type: 'warning', showCloseButton: true, showConfirmButton: false });
-		}else{
+		}
+		else{
 			//this.queryObj.params.queryType = this.searchOnchagneValues
 			this.queryObj.params.start = 0
 			this.rows = []
@@ -478,11 +451,16 @@ disableButtons(event){
 			this.disableButton = true;
 			this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 			if(this.isEnvchahnged){
-			signOutFromCognito();
+			signOutFromCognito(this.cognitoDetails);
 			this.login.getEnvProps(this.place)
 			this.updateUrls(this.place);
-			let userName = localStorage.getItem('userName');
-			let password = localStorage.getItem('password');
+			let userName =decrypt(localStorage.getItem('uno'));
+			let password =decrypt(localStorage.getItem('unokey'));
+			// this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
+			// 	if(res){
+			// 		console.log(res,"cognitoDetails");
+			// 	}
+			// })
 			//signOutFromCognito();
 			this.login.cognitoAwsAmplify(this.baseurl,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
 			//this.getData()
@@ -928,7 +906,7 @@ disableButtons(event){
 	onChangePlace(e){
 	   this.place = e.label
 	   this.isEnvchahnged = true
-	   this.clearFilters();
+	   this.clearFilters(false);
 	}
 
 	onChangeSelectedWd(e,name){

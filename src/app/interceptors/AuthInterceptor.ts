@@ -13,36 +13,36 @@ import {
   HttpUserEvent
 } from '@angular/common/http';
 
-import { refreshTokens,cognitoAwsAmplify } from "../helpers";
+import { refreshTokens,decrypt } from "../helpers";
 import { throwError as observableThrowError, Observable, BehaviorSubject } from 'rxjs';
 import {  catchError, map, timeout, delay } from 'rxjs/operators';
-
+import * as CryptoJS from 'crypto-js';
+import { secretKey } from "../table/data";
 
 import {
   Router
 } from '@angular/router';
-
+import { Store } from '@ngrx/store';
+import * as fromStore from '../store/reducers/index';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private router: Router) { }
+  cognitoDetails: any;
+  constructor(private router: Router,public store: Store<fromStore.State>) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpSentEvent | HttpHeaderResponse | HttpProgressEvent | HttpResponse<any> | HttpUserEvent<any>> {
     //Get the auth header from the service.
-    var ClientId = localStorage.getItem('ClientId')
-    let userName = localStorage.getItem('userName');
-    let password = localStorage.getItem('password');
-    var IdentityPoolId = localStorage.getItem('IdentityPoolId')
-    var UserPoolId = localStorage.getItem('UserPoolId')
-    var regionId = localStorage.getItem('regionId')
+    this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
+			if(res){
+				this.cognitoDetails = res;
+			}
+		})
+
     let authHeader = ''
-    let idToken = "CognitoIdentityServiceProvider."+ClientId+"."+userName+".idToken"
-    authHeader = (localStorage.getItem(idToken))!=null?localStorage.getItem(idToken):'' ;
-       if(!req.url.includes("userLogin")){
-      // if(authHeader==null && ClientId && userName && IdentityPoolId && UserPoolId && regionId && password ){
-      //   cognitoAwsAmplify(userName,password,regionId,IdentityPoolId,UserPoolId,ClientId)
-      // }else if(authHeader &&( !ClientId || !userName || !IdentityPoolId || !UserPoolId || !regionId || !password)){
-      //   this.router.navigate(['/login']);
-      // }
+    let idToken
+       if(!req.url.includes("userLogin") && !req.url.includes("amazonaws.com")){
+        let userName =decrypt(localStorage.getItem('uno'));
+         idToken = "CognitoIdentityServiceProvider."+this.cognitoDetails.clientId+"."+userName+".idToken"
+        authHeader = (localStorage.getItem(idToken))!=null?localStorage.getItem(idToken):'' ;
     if(authHeader!=null){
       let kid
       let refresh = false
@@ -53,7 +53,7 @@ export class AuthInterceptor implements HttpInterceptor {
         refresh = true
       }
       if(refresh){
-        refreshTokens();
+        refreshTokens(this.cognitoDetails);
       }else {
         var expTime = JSON.parse(atob(authHeader.split('.')[1])).exp;
         var expDate = new Date(((expTime*1000)-(2*60*1000)));
@@ -61,7 +61,7 @@ export class AuthInterceptor implements HttpInterceptor {
         console.log(expDate,curDate)
         if(curDate>expDate){
           console.log("token expired")
-          refreshTokens();
+          refreshTokens(this.cognitoDetails);
         }else {
           console.log("token valid")
         }
@@ -69,31 +69,16 @@ export class AuthInterceptor implements HttpInterceptor {
   }
    req = req.clone({ headers: req.headers.set('Authorization', authHeader) });
  }
-     //const authHeader = Cookies.get('xmlQueryToken') || ''
     // Clone the request to add the new header.
       return next.handle(req).pipe(catchError(err => {
         console.log(err);
         if (err.status === 401) {
-          //if (err.error.message == "The incoming token has expired") {
               authHeader = localStorage.getItem(idToken);
               req = req.clone({ headers: req.headers.set('Authorization', authHeader) });
               return next.handle(req).pipe(catchError(error => {
                 console.log(error,"error iss")
-                //let interval = setInterval(()=>{
-                 // authHeader = localStorage.getItem(idToken);
-                  //  clearInterval(interval);
-                    // req = req.clone({ headers: req.headers.set('Authorization', authHeader) });
-                    // return next.handle(req).pipe(delay(5000),catchError(e=>{
-                    //   return observableThrowError(error);
-                    // }));
-              //  },1000)
-
                         return observableThrowError(error);
               }));
-
-          // }else {
-          //   //Logout from account or do some other stuff
-          // }
         }
         return observableThrowError(err);
     }));

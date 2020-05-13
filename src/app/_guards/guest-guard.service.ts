@@ -5,14 +5,18 @@ import {
     RouterStateSnapshot,
     CanActivateChild
 } from '@angular/router';
+import { Store } from '@ngrx/store';
+import * as fromStore from '../store/reducers/index';
+import { decrypt } from "../helpers";
 let Cookies = require('js-cookie');
 // import { AuthService } from './auth.service';
 
 @Injectable()
 export class GuestGuard implements CanActivate, CanActivateChild {
+    cognitoDetails: any;
     constructor(
         // private authService: AuthService,
-        private router: Router) { }
+        private router: Router,public store: Store<fromStore.State>) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
         let url: string = state.url;
@@ -25,11 +29,17 @@ export class GuestGuard implements CanActivate, CanActivateChild {
     }
 
     checkLogin(url: string): boolean {
-      //  let cookie = Cookies.get('xmlQueryToken');
-      var ClientId = localStorage.getItem('ClientId')
-    let userName = localStorage.getItem('userName');
-    let idToken = "CognitoIdentityServiceProvider."+ClientId+"."+userName+".idToken"
-    let authHeader = localStorage.getItem(idToken);
+      this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
+        if(res){
+            this.cognitoDetails = res;
+        }
+    })
+      let authHeader =null
+        if(localStorage.getItem("uno")!=null){
+    let userName =decrypt(localStorage.getItem('uno'));
+    let idToken = "CognitoIdentityServiceProvider."+this.cognitoDetails.clientId+"."+userName+".idToken"
+     authHeader = localStorage.getItem(idToken);
+        }
         if (authHeader!=null) {
             this.router.navigate(['/']);
             return true
