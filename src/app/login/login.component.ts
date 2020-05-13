@@ -8,11 +8,8 @@ import * as xmlQueryToolAction from '../store/actions/xmlQueryTool.actions';
 import { Store } from '@ngrx/store';
 import * as fromStore from '../store/reducers/index';
 import {environment} from '../../environments/environment'
-import {
-	CognitoUserPool,
-	CognitoUserAttribute,
-	CognitoUser,
-} from 'amazon-cognito-identity-js';
+import { secretKey } from "../table/data";
+import * as CryptoJS from 'crypto-js';
 declare var window: any
 
 @Component({
@@ -39,12 +36,18 @@ export class LoginComponent implements OnInit{
   ClientId = ''
   regionId = ''
   IdentityPoolId = ''
+  cognitoDetails={}
   env = '';
   successOrFailure:boolean;
   loading:boolean = false
   ngOnInit() {
 
   }
+  encrypt(value : string) : string{
+    return CryptoJS.AES.encrypt(value, secretKey.trim()).toString();
+  }
+
+
      getEnvProps(env){
     if(env == "DEV") {
       this.UserPoolId = 'us-east-1_q38uYDTHa'
@@ -67,11 +70,17 @@ export class LoginComponent implements OnInit{
       this.regionId = 'us-east-1'
       this.IdentityPoolId = 'us-east-1:34dfed7e-1ec4-443c-bd23-c308aed829c0'
     }
-    localStorage.setItem('UserPoolId', this.UserPoolId)
-    localStorage.setItem('regionId',this.regionId );
-    localStorage.setItem('ClientId', this.ClientId)
-    localStorage.setItem('IdentityPoolId',this.IdentityPoolId);
+    localStorage.setItem("loggedInEnv",env);
     this.provider ="cognito-idp."+this.regionId+".amazonaws.com/"+this.UserPoolId
+     this.cognitoDetails = {
+      userPoolId:this.UserPoolId,
+      regionId:this.regionId,
+      clientId:this.ClientId,
+      identityPoolId:this.IdentityPoolId,
+      userName:this.userName,
+      password:this.password
+    }
+   		 this.store.dispatch(new xmlQueryToolAction.StoreCognitoDetails(this.cognitoDetails));
   }
   login() {
     this.isInvalid = false;
@@ -156,8 +165,8 @@ onSuccess: function(result) {
       console.log('Successfully logged!');
       completed = true
       //Cookies.set('xmlQueryToken',result.getIdToken().getJwtToken());
-      localStorage.setItem('userName', userName)
-      localStorage.setItem('password', password)
+      localStorage.setItem('uno', self.encrypt(userName))
+      localStorage.setItem('unokey', self.encrypt(password))
       if(completed){
         self.http.get(baseurl + '/advSearch', queryObj).subscribe(res => {
           this.loadingIndicator = false
@@ -165,7 +174,6 @@ onSuccess: function(result) {
             alert('Something wrong')
             return
           }
-          //self.store.dispatch(new xmlQueryToolAction.StoreTableData(res));
           self.tablesData.emit(res);
           self.disableButtons.emit(false);
         })
@@ -183,6 +191,7 @@ onSuccess: function(result) {
 onFailure: (err)=> {
   console.log("data mismatch",err.message || JSON.stringify(err))
   self.dataMessage.emit({"message":err.message,"isLoading":false,"disablebuttons":false})
+  self.disableButtons.emit(false);
   this.errorMsg = err.message
    this.isInvalid = true
 },

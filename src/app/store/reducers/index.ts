@@ -10,17 +10,17 @@ import * as fromXmlQueryTool from './xmlQueryTool.reducer';
 
 // tslint:disable-next-line:no-empty-interface
 export interface State {
-  tableData: fromXmlQueryTool.State,
+  cognitoDetails: fromXmlQueryTool.State,
 
 
 }
 
 export const reducers: ActionReducerMap<State> = {
-  tableData: fromXmlQueryTool.reducer,
+  cognitoDetails: fromXmlQueryTool.reducer,
 
 };
 
-export const tableData = createFeatureSelector<fromXmlQueryTool.State>('tableData');
-export const getTableData = createSelector(tableData, fromXmlQueryTool.getTableData);
+export const cognitoDetails = createFeatureSelector<fromXmlQueryTool.State>('cognitoDetails');
+export const getCognitoDetails = createSelector(cognitoDetails, fromXmlQueryTool.getCognitoDetails);
 
 export const metaReducers: MetaReducer<State>[] = [];
