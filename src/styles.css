@@ -1388,3 +1388,13 @@ body.swal2-shown .swal2-popup .swal2-close {
     right: 5px;
     top: 5px;
 }
+
+.material.xml-query-tool .ngx-datatable.fixed-header .datatable-header .datatable-header-inner .datatable-header-cell,
+.material.xml-query-tool .page-container .ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell {
+	order: 2;
+}
+
+.material.xml-query-tool datatable-header-cell.datatable-header-cell.sortable.resizeable.ng-star-inserted,
+.material.xml-query-tool datatable-body-cell.datatable-body-cell.my-custom-cell.sort-active {
+	order: 0 !important;
+}
