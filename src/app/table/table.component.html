@@ -152,7 +152,7 @@
             [reorderable]="true" columnMode="force" [headerHeight]="50" [footerHeight]="0" [virtualization]="false" [scrollbarH]="true"
             [messages]="tableMessages" (reorder)="onReorder()" (resize)="onReorder()">
             <!--<ngx-datatable-column name="" sortable="false" prop="id" [width]="105">-->
-                <ngx-datatable-column name="" sortable="false" [width]="105">
+                <ngx-datatable-column name=""[cellClass]="'my-custom-cell'" sortable="false" prop="id" [width]="105">
                 <ng-template let-row="data" let-value="value" ngx-datatable-cell-template>
                         <button class="cell-btn bg-transparent mr-1 mb-1" (click)="dataOpen(value,columnDataContent)">D</button>
                         <button class="cell-btn bg-transparent mr-1 mb-1" (click)="reqRespOpen(value,reqrespContent)">R</button>

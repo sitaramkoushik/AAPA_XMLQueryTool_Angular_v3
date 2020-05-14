@@ -155,7 +155,7 @@ export class TableComponent implements OnInit {
 		//signOutFromCognito();
 		this.login.cognitoAwsAmplify("https://ms.myplace4parts.com/prod/xmlQueryTool",userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
 
-		this.registerScrollEvent()
+		//this.registerScrollEvent()
 		this.getSelectedColumns()
 		let data = localStorage.getItem('autoFillQueryData')
 		this.autoFillQueryData = JSON.parse(data)
@@ -269,7 +269,9 @@ disableButtons(event){
 		let element: HTMLElement = document.querySelector(this.dataTabelBodySelector)
 		element.onscroll = () => {
 			let scrollBottom = element.scrollTop + element.clientHeight
-			if (((element.scrollHeight / 3) * 2) <= scrollBottom) {
+			//if (((element.scrollHeight / 3) * 2) <= scrollBottom) {
+				if (((element.scrollHeight / 3) * 2) < scrollBottom) {
+				console.log("registerScrollEvent")
 				this.debounced()
 			}
 		}
@@ -278,6 +280,7 @@ disableButtons(event){
 	checkIfScrollable() {
 		let element: HTMLElement = document.querySelector(this.dataTabelBodySelector)
 		if (element.scrollHeight === element.clientHeight && this.rowCount) {
+			console.log("checkIfScrollable")
 			this.debounced()
 		}
 	}
@@ -406,11 +409,17 @@ disableButtons(event){
 			this.autoFillQueryData = newKeys
 		}
 	}
-
+	onDrop(event){
+		console.log("ondrop");
+	}
+	onActivate(event){
+		console.log("activated")
+	}
 	onReorder() {
 		setTimeout(() => {
 			let columns = this.xmlTableRef.headerComponent.columns
 			let newColumns = []
+			console.log(columns,"columns are")
 			columns = columns.map(item => {
 				if (item.name) {
 					return {
@@ -519,6 +528,7 @@ disableButtons(event){
 	}
 
 	dataOpen(data, content) {
+		console.log(data)
 		this.selectedColumnID = data
 
 		let row = this.rows.find((item) => item['id'] == data)
