@@ -144,7 +144,7 @@ export class TableComponent implements OnInit {
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 		//this.loading = true;
 		this.updateUrls("PROD");
-		this.login.getEnvProps("PROD");
+		// this.login.getEnvProps("PROD");
 		this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
 			if(res){
 				this.cognitoDetails = res;
@@ -152,8 +152,13 @@ export class TableComponent implements OnInit {
 		})
 		let userName =decrypt(localStorage.getItem('uno'));
 		let password = decrypt(localStorage.getItem('unokey'));
+		let isEnvChange = localStorage.getItem('loggedInEnv');
 		//signOutFromCognito();
-		this.login.cognitoAwsAmplify("https://ms.myplace4parts.com/prod/xmlQueryTool",userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
+		if(isEnvChange!="PROD"){
+			this.login.cognitoAwsAmplify("PROD","https://ms.myplace4parts.com/prod/xmlQueryTool",userName,password,false,this.queryObj);
+		}else{
+			this.getData();
+		}
 
 		//this.registerScrollEvent()
 		this.getSelectedColumns()
@@ -461,7 +466,7 @@ disableButtons(event){
 			this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 			if(this.isEnvchahnged){
 			signOutFromCognito(this.cognitoDetails);
-			this.login.getEnvProps(this.place)
+			// this.login.getEnvProps(this.place)
 			this.updateUrls(this.place);
 			let userName =decrypt(localStorage.getItem('uno'));
 			let password =decrypt(localStorage.getItem('unokey'));
@@ -471,7 +476,7 @@ disableButtons(event){
 			// 	}
 			// })
 			//signOutFromCognito();
-			this.login.cognitoAwsAmplify(this.baseurl,userName,password,this.login.regionId,this.login.IdentityPoolId,this.login.UserPoolId,this.login.ClientId,true,this.queryObj);
+			this.login.cognitoAwsAmplify(this.place,this.baseurl,userName,password,false,this.queryObj);
 			//this.getData()
 			}else{
 				this.getData()
