@@ -29,19 +29,22 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     }
 
     checkLogin(url: string): boolean {
-       this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
-        if(res){
-            this.cognitoDetails = res;
-        }
-    })
-        let authHeader =null
-        if(localStorage.getItem("uno")!=null){
-            let userName =decrypt(localStorage.getItem('uno'));
-            let idToken = "CognitoIdentityServiceProvider."+this.cognitoDetails.clientId+"."+userName+".idToken"
-             authHeader = localStorage.getItem(idToken);
-        }
-        if (authHeader!=null) {
-            return true
+    //    this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
+    //     if(res){
+    //         this.cognitoDetails = res;
+    //     }
+    // })
+    //     let authHeader =null
+    //     if(localStorage.getItem("uno")!=null){
+    //         let userName =decrypt(localStorage.getItem('uno'));
+    //         let idToken = "CognitoIdentityServiceProvider."+this.cognitoDetails.clientId+"."+userName+".idToken"
+    //          authHeader = localStorage.getItem(idToken);
+    //     }
+        // if (authHeader!=null) {
+        //     return true
+        // }
+        if(localStorage.getItem("HQUserLoggedIn")== "true"){
+            return true;
         }
         this.router.navigate(['/login']);
         return false

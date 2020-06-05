@@ -174,6 +174,7 @@ onSuccess: function(result) {
        .subscribe(data => {
          if (data && data['statusCode']=='200' && data['isHqUser']==true) {
           self.loading = false;
+          localStorage.setItem("HQUserLoggedIn","true");
           self.router.navigate(['']);
             }
           else{
