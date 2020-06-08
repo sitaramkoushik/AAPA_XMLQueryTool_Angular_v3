@@ -160,7 +160,7 @@ export class TableComponent implements OnInit {
 			this.getData();
 		}
 
-		//this.registerScrollEvent()
+		this.registerScrollEvent()
 		this.getSelectedColumns()
 		let data = localStorage.getItem('autoFillQueryData')
 		this.autoFillQueryData = JSON.parse(data)
@@ -185,8 +185,8 @@ export class TableComponent implements OnInit {
 
 
 	tablesData(res){
-		this.rows = []
-			this.rowCount = 0
+		// this.rows = []
+		// 	this.rowCount = 0
 			this.rows = [...this.rows, ...res['data']]
 					this.rowCount = res['numResults']
 					//this.loading = false;
@@ -198,6 +198,7 @@ export class TableComponent implements OnInit {
 	}
 	displayErrorMsg(res){
 		//this.loading = data.isLoading
+		console.log(this.originalData)
 		this.rows = [...this.rows, ...this.originalData['data']]
 		this.rowCount = this.originalData['numResults']
 		this.disableButton = res['disablebuttons']
