@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-   login : "https://ms.myplace4parts.com/prod/hqUser/userLogin"
+  // login : "https://ms.myplace4parts.com/prod/hqUser/userLogin"
+    login : "http://10.10.1.36:8080/xmlQueryTool/userLogin"
 };
 
 /*

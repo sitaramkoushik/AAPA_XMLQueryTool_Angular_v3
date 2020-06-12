@@ -17,7 +17,7 @@ let baseObject: BaseObjectInterface = {
 	params: {
 		searchKey: '',
 		count: 20,
-
+		env: 'PROD',
 		queryType: '',
 		start: 0,
 		action: '',
@@ -80,6 +80,7 @@ export interface BaseObjectInterface {
 interface ParamsInterface {
 	searchKey: string
 	count: number
+	env: string,
 	queryType: string
 	start: number
 	action: string
