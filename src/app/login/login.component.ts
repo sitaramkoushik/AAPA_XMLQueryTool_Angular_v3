@@ -100,7 +100,7 @@ export class LoginComponent implements OnInit{
        this.getEnvProps("DEV");
       // let requestedEnv = localStorage.getItem("envRequested")
       //this.cognitoAwsAmplify("PROD","https://ms.myplace4parts.com/prod/xmlQueryTool",this.userName,this.password,true,[]);
-      this.cognitoAwsAmplify("PROD","http://10.10.1.36:8080/xmlQueryTool",this.userName,this.password,true,[]);
+      this.cognitoAwsAmplify("PROD","https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool",this.userName,this.password,true,[]);
     }
     else {
       this.errorMsg = 'Please Enter Username and Password'

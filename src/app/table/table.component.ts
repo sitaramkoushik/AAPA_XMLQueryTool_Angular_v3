@@ -148,7 +148,7 @@ export class TableComponent implements OnInit {
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 		//this.loading = true;
 		//this.updateUrls("PROD");
-		  this.baseurl = "http://10.10.1.36:8080/xmlQueryTool"
+		  this.baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
 		this.tableData = this.baseurl + '/advSearch',
 		this.reqResponse = this.baseurl + '/xmlReqResp',
 		this.reqXml = this.baseurl + '/xmlreqresfromEs',
@@ -173,7 +173,7 @@ export class TableComponent implements OnInit {
 			// }
 			// this.queryObj.params = { ...this.queryObj.params, ...newParams }
 
-			this.login.cognitoAwsAmplify("PROD","http://10.10.1.36:8080/xmlQueryTool",userName,password,false,this.queryObj);
+			this.login.cognitoAwsAmplify("PROD","https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool",userName,password,false,this.queryObj);
 		}else{
 			this.getData();
 		}
@@ -366,7 +366,7 @@ disableButtons(event){
 			  }else if(env == "DEV") {
 				this.baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
 			  }
-			  this.baseurl = "http://10.10.1.36:8080/xmlQueryTool"
+			  this.baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
 		this.tableData = this.baseurl + '/advSearch',
 		this.reqResponse = this.baseurl + '/xmlReqResp',
 		this.reqXml = this.baseurl + '/xmlreqresfromEs',

@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   // login : "https://ms.myplace4parts.com/prod/hqUser/userLogin"
-    login : "http://10.10.1.36:8080/xmlQueryTool/userLogin"
+    login : "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/"
 };
 
 /*
