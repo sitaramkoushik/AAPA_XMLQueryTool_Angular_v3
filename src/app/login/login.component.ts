@@ -1,7 +1,7 @@
 import { Component, OnInit,Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders,HttpParams } from '@angular/common/http';
 let Cookies = require('js-cookie');
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 // import AWS object without services
 import * as AWS from 'aws-sdk/global';
 import * as xmlQueryToolAction from '../store/actions/xmlQueryTool.actions';
@@ -27,7 +27,8 @@ export class LoginComponent implements OnInit{
   cognitoUser: any;
 
 
-  constructor(private http: HttpClient, private router: Router,public store: Store<fromStore.State>) { }
+  constructor(private http: HttpClient, private router: Router,public store: Store<fromStore.State>,
+    private route: ActivatedRoute,) { }
   isInvalid:boolean = false;
   errorMsg = ''
   userName = '';
@@ -37,7 +38,7 @@ export class LoginComponent implements OnInit{
   regionId = ''
   IdentityPoolId = ''
   cognitoDetails={}
-  env = '';
+  // env = 'PROD';
   successOrFailure:boolean;
   loading:boolean = false
   ngOnInit() {
@@ -90,9 +91,16 @@ export class LoginComponent implements OnInit{
 
     if ((this.userName && this.userName.length) && (this.password && this.password.length)) {
       this.loading = true;
-      // this.getEnvProps(this.env);
-      this.cognitoAwsAmplify("PROD","https://ms.myplace4parts.com/prod/xmlQueryTool",this.userName,this.password,true,[]);
-
+      // this.route
+      // .queryParams
+      // .subscribe(params => {
+      //   // Defaults to 0 if no query param provided.
+      //   this.env = params['env'] || "PROD";
+      // });
+       this.getEnvProps("DEV");
+      // let requestedEnv = localStorage.getItem("envRequested")
+      //this.cognitoAwsAmplify("PROD","https://ms.myplace4parts.com/prod/xmlQueryTool",this.userName,this.password,true,[]);
+      this.cognitoAwsAmplify("PROD","https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool",this.userName,this.password,true,[]);
     }
     else {
       this.errorMsg = 'Please Enter Username and Password'
@@ -102,34 +110,26 @@ export class LoginComponent implements OnInit{
   cognitoAwsAmplify(env,baseurl,userName,password,isLogin,queryObj:{}){
 
 
-    if(env == "DEV") {
-      this.UserPoolId = 'us-east-1_q38uYDTHa'
-      this.ClientId = '3dn006e20aft7s75ijam0bmsuf'
-      this.regionId = 'us-east-1'
-      this.IdentityPoolId = 'us-east-1:6a44e2cf-b89e-4ad0-abaa-49dba53f8dd0'
-    }else if ( env == "STAGING") {
-      this.UserPoolId = 'us-east-1_EG7QRM8Ej'
-      this.ClientId = '2f5d4qjvsmqu9cgroea9mokgia'
-      this.regionId = 'us-east-1'
-      this.IdentityPoolId = 'us-east-1:53807951-c2ed-45bf-a71e-9ea521b6afe8'
-    } else if (env == "PROD") {
-      this.UserPoolId = 'us-east-1_nMzI8o7iu'
-      this.ClientId = '5r283s0pt9cl41vc0v1mrj0bb2'
-      this.regionId = 'us-east-1'
-      this.IdentityPoolId = 'us-east-1:34dfed7e-1ec4-443c-bd23-c308aed829c0'
-    } else {
-      this.UserPoolId = 'us-east-1_nMzI8o7iu'
-      this.ClientId = '5r283s0pt9cl41vc0v1mrj0bb2'
-      this.regionId = 'us-east-1'
-      this.IdentityPoolId = 'us-east-1:34dfed7e-1ec4-443c-bd23-c308aed829c0'
-    }
-    localStorage.setItem("loggedInEnv",env);
-    this.provider ="cognito-idp."+this.regionId+".amazonaws.com/"+this.UserPoolId
-    var poolData = {
-      UserPoolId:this.UserPoolId, // Your user pool id here
-      ClientId: this.ClientId, // Your client id here
-    };
-    var completed = false
+
+    this.UserPoolId = 'us-east-1_nMzI8o7iu'
+    this.ClientId = '5r283s0pt9cl41vc0v1mrj0bb2'
+    this.regionId = 'us-east-1'
+    this.IdentityPoolId = 'us-east-1:34dfed7e-1ec4-443c-bd23-c308aed829c0'
+      this.provider ="cognito-idp."+this.regionId+".amazonaws.com/"+this.UserPoolId
+      localStorage.setItem("loggedInEnv",env);
+       this.cognitoDetails = {
+        userPoolId:this.UserPoolId,
+        regionId:this.regionId,
+        clientId:this.ClientId,
+        identityPoolId:this.IdentityPoolId,
+        userName:this.userName,
+        password:this.password
+      }
+          this.store.dispatch(new xmlQueryToolAction.StoreCognitoDetails(this.cognitoDetails));
+      var poolData = {
+        UserPoolId:this.UserPoolId, // Your user pool id here
+        ClientId: this.ClientId, // Your client id here
+      };
     var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
     var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
@@ -140,13 +140,13 @@ export class LoginComponent implements OnInit{
 
      this.cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
-var authenticationData = {
-Username: userName,
-Password: password,
-};
-var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
-authenticationData
-);
+      var authenticationData = {
+      Username: userName,
+      Password: password,
+      };
+      var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
+      authenticationData
+      );
 var self = this
 this.cognitoUser.authenticateUser(authenticationDetails, {
 onSuccess: function(result) {
@@ -167,21 +167,25 @@ onSuccess: function(result) {
       console.error(error,"ERRRORROROROROROR",result);
     } else {
       console.log('Successfully logged!');
-      localStorage.setItem('uno', self.encrypt(userName))
-      localStorage.setItem('unokey', self.encrypt(password))
+
       if(isLogin){
+        console.log("inside login",environment.login);
+        localStorage.setItem('uno', self.encrypt(userName))
+        localStorage.setItem('unokey', self.encrypt(password))
         self.http.post(environment.login, {userName:self.userName,password:self.password} )
        .subscribe(data => {
          if (data && data['statusCode']=='200' && data['isHqUser']==true) {
           self.loading = false;
           localStorage.setItem("HQUserLoggedIn","true");
+          localStorage.setItem("loggedInEnv",env);
+
           self.router.navigate(['']);
             }
           else{
             self.errorMsg = (data['isHqUser']==true)?data['message']:"Not a hq user";
             self.isInvalid = true
             self.loading = false
-
+            localStorage.clear()
           }
         }, err => {
           self.errorMsg = 'Failed to connect to a  service'

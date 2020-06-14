@@ -18,6 +18,9 @@ import { Store } from '@ngrx/store';
 import * as fromStore from '../store/reducers/index';
 import * as xmlQueryToolAction from '../store/actions/xmlQueryTool.actions';
 import * as CryptoJS from 'crypto-js';
+import {
+     Router
+} from '@angular/router';
 declare var _:any
 const Swal = require('sweetalert2')
 
@@ -123,7 +126,8 @@ export class TableComponent implements OnInit {
 		private formBuilder: FormBuilder,
 		private toastr: ToastrService,
 		private ngbDatepickerConfig:NgbDatepickerConfig,
-		public store: Store<fromStore.State>
+		public store: Store<fromStore.State>,
+		private router: Router
 //		private loginComponent: LoginComponent
 	) {
 
@@ -143,10 +147,18 @@ export class TableComponent implements OnInit {
 	ngOnInit() {
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 		//this.loading = true;
-		this.updateUrls("PROD");
-		// this.login.getEnvProps("PROD");
+		//this.updateUrls("PROD");
+		  this.baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
+		this.tableData = this.baseurl + '/advSearch',
+		this.reqResponse = this.baseurl + '/xmlReqResp',
+		this.reqXml = this.baseurl + '/xmlreqresfromEs',
+		this.exportUrl = this.baseurl + '/exportData',
+		this.exportstatus = this.baseurl + '/getStatus',
+		this.wdNames = this.baseurl + '/getWdNames'
+		// this.login.getEnvProps("DEV");
 		this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
 			if(res){
+				console.log("response is",res)
 				this.cognitoDetails = res;
 			}
 		})
@@ -155,7 +167,13 @@ export class TableComponent implements OnInit {
 		let isEnvChange = localStorage.getItem('loggedInEnv');
 		//signOutFromCognito();
 		if(isEnvChange!="PROD"){
-			this.login.cognitoAwsAmplify("PROD","https://ms.myplace4parts.com/prod/xmlQueryTool",userName,password,false,this.queryObj);
+			console.log("env is",isEnvChange);
+			// let newParams = {
+			// 	env : this.place
+			// }
+			// this.queryObj.params = { ...this.queryObj.params, ...newParams }
+
+			this.login.cognitoAwsAmplify("PROD","https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool",userName,password,false,this.queryObj);
 		}else{
 			this.getData();
 		}
@@ -214,7 +232,9 @@ disableButtons(event){
 			this.newArray=[]
 			this.wdNamesData=[]
 			try{
-				this.http.get(this.wdNames).subscribe(res => {
+				let parameters = new HttpParams()
+			.set('env', this.queryObj.params.env)
+				this.http.get(this.wdNames,{params:parameters}).subscribe(res => {
 					if(res && res['statusCode']=='200'){
 						this.wdNamesService = res['result']
 					  this.wdNamesData = this.wdNamesService
@@ -346,6 +366,7 @@ disableButtons(event){
 			  }else if(env == "DEV") {
 				this.baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
 			  }
+			  this.baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
 		this.tableData = this.baseurl + '/advSearch',
 		this.reqResponse = this.baseurl + '/xmlReqResp',
 		this.reqXml = this.baseurl + '/xmlreqresfromEs',
@@ -361,14 +382,15 @@ disableButtons(event){
 		let newParams = {
 			dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
 			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '',
+			env : (this.place == "STAGING") ? "BETA" : this.place
 		}
 		if(this.queryObj.params.searchKey.indexOf("created:[")!=-1){
 			newParams = {
 				dateFrom:'',
-				dateTo:''
-			}
+				dateTo:'',
+				env : this.place
+				}
 		}
-
 
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }
 		// @ts-ignore
@@ -449,8 +471,44 @@ disableButtons(event){
 		})
 	}
 
+	// swal.fire({
+	// 	title: `${removeProgarm} `,
+	// 	type: 'warning',
+	// 	showCancelButton: true,
+	// 	cancelButtonText: this.configurationLanguages[languageKeys.cancel],
+	// 	confirmButtonText: this.configurationLanguages[languageKeys.ok]
+	//   }).then(async (result) => {
+	// 	if (result.value ) {
+	// 	   this.permissionService.updatePermission(this.assetType, this.radioData, docTypeIdOrFolderId, this.newPermissions,progressId).toPromise().then(
+	// 		   data=>{
+	// 		   }).catch(err=>{
+	// 			 console.log(err);
+	// 		   });
+	// 	 this.interval = setInterval(() => {
+	// 	 this.getStatus(progressId);
+	//    }, 1000);
+	//    }
+	//   })
+
 	 reSearch() {
-		// this.loading = true
+		// localStorage.setItem("envRequested",this.place);
+		// Swal.fire({
+		// 		title: "do you want to continue",
+		// 		type: 'warning',
+		// 		showCancelButton: true,
+		// 		//cancelButtonText: this.configurationLanguages[languageKeys.cancel],
+		// 		//confirmButtonText: this.configurationLanguages[languageKeys.ok]
+		// 	}).then(async (result) => {
+		// 		if (result.value ) {
+		// 			localStorage.clear();
+		// 			this.router.navigate(['/login'], { queryParams: { env: this.place } });
+		// 	}else{
+		// 		this.place = localStorage.getItem("loggedInEnv")
+		// 	}
+		// 	})
+
+
+		this.loading = true
 		let fromDate:any = new Date(this.startDate.year, this.startDate.month-1, this.startDate.day)
 		let toDate:any = new Date(this.endDate.year, this.endDate.month-1, this.endDate.day)
 
@@ -465,24 +523,24 @@ disableButtons(event){
 			this.rowCount = 0
 			this.disableButton = true;
 			this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
-			if(this.isEnvchahnged){
-			signOutFromCognito(this.cognitoDetails);
-			// this.login.getEnvProps(this.place)
-			this.updateUrls(this.place);
-			let userName =decrypt(localStorage.getItem('uno'));
-			let password =decrypt(localStorage.getItem('unokey'));
-			// this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
-			// 	if(res){
-			// 		console.log(res,"cognitoDetails");
-			// 	}
-			// })
-			//signOutFromCognito();
-			this.login.cognitoAwsAmplify(this.place,this.baseurl,userName,password,false,this.queryObj);
-			//this.getData()
-			}else{
+			// if(this.isEnvchahnged){
+			// signOutFromCognito(this.cognitoDetails);
+			// // this.login.getEnvProps(this.place)
+			// this.updateUrls(this.place);
+			// let userName =decrypt(localStorage.getItem('uno'));
+			// let password =decrypt(localStorage.getItem('unokey'));
+			// // this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
+			// // 	if(res){
+			// // 		console.log(res,"cognitoDetails");
+			// // 	}
+			// // })
+			// //signOutFromCognito();
+			// this.login.cognitoAwsAmplify(this.place,this.baseurl,userName,password,false,this.queryObj);
+			// //this.getData()
+			// }else{
 				this.getData()
-			}
-			this.isEnvchahnged = false;
+			// }
+			// this.isEnvchahnged = false;
 			this.closeFilters()
 		}
 	}
@@ -567,7 +625,8 @@ disableButtons(event){
 				id: row['id'],
 				created: row['created'],
 				server: row['server'],
-				ts: new Date().getTime()
+				ts: new Date().getTime(),
+				env : this.queryObj.params.env
 			}
 		}
 		this.http.get(this.reqResponse, body).subscribe(res => {
@@ -602,8 +661,8 @@ disableButtons(event){
 
 		let parameters = new HttpParams()
 			.set('activityDate', year + month)
-			.set('xmlActivityId', row['id']);
-			//.set('env', this.queryObj.params.env);
+			.set('xmlActivityId', row['id'])
+			.set('env', this.queryObj.params.env);
 		this.http.get(this.reqXml, { params: parameters }).subscribe(res => {
 
 			if (!res || !res['_source'] || res['StatusCode'] == 400) {
@@ -802,7 +861,7 @@ disableButtons(event){
 
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }
 		let parameters = new HttpParams()
-		//.set('env', this.queryObj.params.env)
+		.set('env', this.queryObj.params.env)
 		.set('queryType', this.queryObj.params.queryType)
 		.set('searchKey', this.queryObj.params.searchKey)
 		.set('action', this.queryObj.params.action)
@@ -920,6 +979,7 @@ disableButtons(event){
     }
 
 	onChangePlace(e){
+
 	   this.place = e.label
 	   this.isEnvchahnged = true
 	   this.clearFilters(false);
