@@ -92,7 +92,6 @@ export class TableComponent implements OnInit {
 	endDate: RequestDateInterface = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
 	userName: String = ''
 	debounced = debounce(() => {
-		console.log("debounce called")
 		this.getMoreData()
 	}, 300)
 	selectedColumnID = 0
@@ -148,7 +147,7 @@ export class TableComponent implements OnInit {
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 		//this.loading = true;
 		//this.updateUrls("PROD");
-		  this.baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
+		  this.baseurl = "https://ms.myplace4parts.com/prod/xmlQueryTool"
 		this.tableData = this.baseurl + '/advSearch',
 		this.reqResponse = this.baseurl + '/xmlReqResp',
 		this.reqXml = this.baseurl + '/xmlreqresfromEs',
@@ -158,7 +157,6 @@ export class TableComponent implements OnInit {
 		// this.login.getEnvProps("DEV");
 		this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
 			if(res){
-				console.log("response is",res)
 				this.cognitoDetails = res;
 			}
 		})
@@ -167,13 +165,12 @@ export class TableComponent implements OnInit {
 		let isEnvChange = localStorage.getItem('loggedInEnv');
 		//signOutFromCognito();
 		if(isEnvChange!="PROD"){
-			console.log("env is",isEnvChange);
 			// let newParams = {
 			// 	env : this.place
 			// }
 			// this.queryObj.params = { ...this.queryObj.params, ...newParams }
 
-			this.login.cognitoAwsAmplify("PROD","https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool",userName,password,false,this.queryObj);
+			this.login.cognitoAwsAmplify("PROD","https://ms.myplace4parts.com/prod/xmlQueryTool",userName,password,false,this.queryObj);
 		}else{
 			this.getData();
 		}
@@ -216,7 +213,6 @@ export class TableComponent implements OnInit {
 	}
 	displayErrorMsg(res){
 		//this.loading = data.isLoading
-		console.log(this.originalData)
 		this.rows = [...this.rows, ...this.originalData['data']]
 		this.rowCount = this.originalData['numResults']
 		this.disableButton = res['disablebuttons']
@@ -297,7 +293,6 @@ disableButtons(event){
 			let scrollBottom = element.scrollTop + element.clientHeight
 			//if (((element.scrollHeight / 3) * 2) <= scrollBottom) {
 				if (((element.scrollHeight / 3) * 2) < scrollBottom) {
-				console.log("registerScrollEvent")
 				this.debounced()
 			}
 		}
@@ -306,7 +301,6 @@ disableButtons(event){
 	checkIfScrollable() {
 		let element: HTMLElement = document.querySelector(this.dataTabelBodySelector)
 		if (element.scrollHeight === element.clientHeight && this.rowCount) {
-			console.log("checkIfScrollable")
 			this.debounced()
 		}
 	}
@@ -366,7 +360,7 @@ disableButtons(event){
 			  }else if(env == "DEV") {
 				this.baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
 			  }
-			  this.baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
+			  this.baseurl = "https://ms.myplace4parts.com/prod/xmlQueryTool"
 		this.tableData = this.baseurl + '/advSearch',
 		this.reqResponse = this.baseurl + '/xmlReqResp',
 		this.reqXml = this.baseurl + '/xmlreqresfromEs',
