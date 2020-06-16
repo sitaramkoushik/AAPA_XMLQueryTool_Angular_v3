@@ -100,7 +100,7 @@ export class LoginComponent implements OnInit{
        this.getEnvProps("DEV");
       // let requestedEnv = localStorage.getItem("envRequested")
       //this.cognitoAwsAmplify("PROD","https://ms.myplace4parts.com/prod/xmlQueryTool",this.userName,this.password,true,[]);
-      this.cognitoAwsAmplify("PROD","https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool",this.userName,this.password,true,[]);
+      this.cognitoAwsAmplify("PROD","https://ms.myplace4parts.com/prod/xmlQueryTool",this.userName,this.password,true,[]);
     }
     else {
       this.errorMsg = 'Please Enter Username and Password'
@@ -111,10 +111,10 @@ export class LoginComponent implements OnInit{
 
 
 
-    this.UserPoolId = 'us-east-1_q38uYDTHa'
-      this.ClientId = '3dn006e20aft7s75ijam0bmsuf'
-      this.regionId = 'us-east-1'
-      this.IdentityPoolId = 'us-east-1:6a44e2cf-b89e-4ad0-abaa-49dba53f8dd0'
+    this.UserPoolId = 'us-east-1_nMzI8o7iu'
+    this.ClientId = '5r283s0pt9cl41vc0v1mrj0bb2'
+    this.regionId = 'us-east-1'
+    this.IdentityPoolId = 'us-east-1:34dfed7e-1ec4-443c-bd23-c308aed829c0'
       this.provider ="cognito-idp."+this.regionId+".amazonaws.com/"+this.UserPoolId
       localStorage.setItem("loggedInEnv",env);
        this.cognitoDetails = {
@@ -169,7 +169,6 @@ onSuccess: function(result) {
       console.log('Successfully logged!');
 
       if(isLogin){
-        console.log("inside login",environment.login);
         localStorage.setItem('uno', self.encrypt(userName))
         localStorage.setItem('unokey', self.encrypt(password))
         self.http.post(environment.login, {userName:self.userName,password:self.password} )

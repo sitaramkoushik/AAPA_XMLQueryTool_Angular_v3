@@ -31,23 +31,17 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpSentEvent | HttpHeaderResponse | HttpProgressEvent | HttpResponse<any> | HttpUserEvent<any>> {
     //Get the auth header from the service.
-    console.log("check")
     this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
 			if(res){
         this.cognitoDetails = res;
-        console.log(res,"res is")
 			}
     })
-    console.log("inside interceptor")
-
     let authHeader = ''
     let idToken
        if(!req.url.includes("amazonaws.com")){
-         console.log("inside it",req.url)
         let userName =decrypt(localStorage.getItem('uno'));
          idToken = "CognitoIdentityServiceProvider."+this.cognitoDetails.clientId+"."+userName+".idToken"
         authHeader = (localStorage.getItem(idToken))!=null?localStorage.getItem(idToken):'' ;
-        console.log("authheader is",authHeader)
     if(authHeader!=null){
       let kid
       let refresh = false
@@ -63,7 +57,6 @@ export class AuthInterceptor implements HttpInterceptor {
         var expTime = JSON.parse(atob(authHeader.split('.')[1])).exp;
         var expDate = new Date(((expTime*1000)-(2*60*1000)));
         var curDate = new Date();
-        console.log(expDate,curDate)
         if(curDate>expDate){
           console.log("token expired")
           refreshTokens(this.cognitoDetails);
@@ -74,8 +67,7 @@ export class AuthInterceptor implements HttpInterceptor {
   }
    req = req.clone({ headers: req.headers.set('Authorization', authHeader) });
  }
- console.log("authh",authHeader);
-    // Clone the request to add the new header.
+     // Clone the request to add the new header.
       return next.handle(req).pipe(catchError(err => {
         console.log(err);
         if (err.status === 401) {
