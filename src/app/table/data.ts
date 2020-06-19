@@ -59,8 +59,6 @@ let actionData = [
 	{ value: 'RET', label: 'RET' },
 	{ value: 'RFQ', label: 'RFQ' },
 ]
- let secretKey = "xmlQueryTool";
-
 export {
 	allCols,
 	allAvailableCols,
@@ -69,8 +67,7 @@ export {
 	queryTypeData,
 	actionData,
 	defaultRowData,
-	wdNameData,
-	secretKey
+	wdNameData
 }
 
 export interface BaseObjectInterface {

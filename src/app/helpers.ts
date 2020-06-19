@@ -1,10 +1,4 @@
-let Cookies = require('js-cookie');
 import * as AWS from 'aws-sdk/global';
-import { HttpClient, HttpHeaders,HttpParams } from '@angular/common/http';
-import * as CryptoJS from 'crypto-js';
-import { secretKey } from "./table/data";
-
-//"build-prod": "ng build --base-href=/staging/xmlquerytool/ --deploy-url=/staging/xmlquerytool/ --prod && cp -r ./src/login ./dist",
  function getCognitoUser(cognitoDetails){
     var poolData = {
       UserPoolId:cognitoDetails.userPoolId, // Your user pool id here
@@ -20,26 +14,7 @@ function signOut(cognitoDetails) {
    localStorage.clear();
     window.location.reload()
 }
-function signOutFromCognito(cognitoDetails){
 
-    var cognitoUser = getCognitoUser(cognitoDetails);
-      cognitoUser.signOut();
-      var username =decrypt(localStorage.getItem('uno'))
-   var commonvalue = `CognitoIdentityServiceProvider.${cognitoDetails.clientId}.${username}`
-    removeLocalStorage(commonvalue,cognitoDetails.identityPoolId);
-}
-function removeLocalStorage(commonValue,IdentityPoolId){
-    localStorage.removeItem(commonValue+".idToken")
-    localStorage.removeItem(commonValue+".deviceKey")
-    localStorage.removeItem(commonValue+".clockDrift")
-    localStorage.removeItem(commonValue+".randomPasswordKey")
-    localStorage.removeItem(commonValue+".deviceGroupKey")
-    localStorage.removeItem(commonValue+".accessToken")
-    localStorage.removeItem(commonValue+".refreshToken")
-    localStorage.removeItem(commonValue+".LastAuthUser")
-    localStorage.removeItem("aws.cognito.identity-id."+IdentityPoolId)
-    localStorage.removeItem("aws.cognito.identity-providers."+IdentityPoolId)
-}
 function merge(arr1, arr2) {
     let flags = {};
     let newArr = [...arr1, ...arr2].filter(function (entry) {
@@ -65,9 +40,6 @@ function refreshTokens(cognitoDetails){
         var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
         var cognitoUser = userPool.getCurrentUser();
         cognitoUser.getSession(function(err, session) {
-            if(session == null){
-              //cognitoAwsAmplify(userName,password,regionId,IdentityPoolId,UserPoolId,ClientId)
-            }else {
                 let refresh_token = session.getRefreshToken();
                 cognitoUser.refreshSession(refresh_token, (err, session) => {
                 if (err) {
@@ -92,7 +64,6 @@ function refreshTokens(cognitoDetails){
                     });
                   }
                 });
-            }
           if (err) {
             alert(err);
             return;
@@ -100,10 +71,7 @@ function refreshTokens(cognitoDetails){
       })
 }
 
-  function decrypt(textToDecrypt : string){
-    return CryptoJS.AES.decrypt(textToDecrypt, secretKey.trim()).toString(CryptoJS.enc.Utf8);
-  }
 
 export {
-    signOut, merge, clearFilters, signOutFromCognito,refreshTokens,decrypt
+    signOut, merge, clearFilters,refreshTokens
 }
