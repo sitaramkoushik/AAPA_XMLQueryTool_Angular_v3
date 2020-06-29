@@ -385,13 +385,14 @@ aes-xml-query {
 	font-size: 12px;
 	font-family: lato;
 	box-shadow: none;
-	max-width: 100px;
-	min-width: 100px;
+	min-width: 150px;
 	background: url(./assets/images/calendar.svg) no-repeat right 5px top 8px;
+	background-color: transparent;
 	padding-left: 5px;
 	background-size: 15px 15px;
 	background-repeat: no-repeat;
 	text-transform: lowercase;
+	height: 32px;
 }
 
 .page-container .search-input-container {
@@ -1397,4 +1398,61 @@ body.swal2-shown .swal2-popup .swal2-close {
 .material.xml-query-tool datatable-header-cell.datatable-header-cell.sortable.resizeable.ng-star-inserted,
 .material.xml-query-tool datatable-body-cell.datatable-body-cell.my-custom-cell.sort-active {
 	order: 0 !important;
+}
+
+
+
+
+.ui-datepicker td>span, .ui-datepicker td>a{
+    text-align: center;
+	width: 2.1rem;
+	padding: 0 !important;
+    height: 2rem;
+    line-height: 2rem;
+    border-radius: .25rem;
+	background: 0 0;
+	font-family: Montserrat,sans-serif;
+	cursor: pointer;
+}
+.ui-datepicker td {
+    border: 0;
+    font-size: 12px !important;
+    padding: 0 !important;
+    width: 2em;
+    height: 2em;
+}
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next {
+    position: absolute;
+    top: 0px;
+    width: 1.8em;
+    height: 1.8em;
+}
+.ui-datepicker .ui-datepicker-header a {
+    color: #1b1d1f;
+    font-size: 22px;
+}
+.ui-datepicker.ui-widget .ui-datepicker-calendar td a.ui-state-active {
+    background-color: #403647!important;
+    color: #ffffff;
+}
+.ui-datepicker select.ui-datepicker-month {
+    margin-right: .25em;
+    border-radius: 5px;
+    padding: 5px;
+    width: 70px;
+}
+.ui-datepicker.ui-widget .ui-datepicker-calendar thead th {
+    background-color: #f6f8fa;
+    line-height: 2rem;
+    text-align: center;
+    font-style: italic;
+    font-size: 11px;
+   /*  font-weight: 400; */
+    color: #17a2b8 !important;
+    padding: 0px;
+}
+.ui-datepicker .ui-datepicker-title select{
+	border-radius: 5px;
+    padding: 5px;
+    width: 70px;
 }

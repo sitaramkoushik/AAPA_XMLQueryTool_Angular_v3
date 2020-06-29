@@ -24,7 +24,7 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import {DropdownModule} from 'primeng/dropdown';
 import { StoreModule } from '@ngrx/store';
 import { reducers, metaReducers } from './store/reducers/index';
-
+import {CalendarModule} from 'primeng/calendar';
 
 
 @NgModule({
@@ -51,7 +51,8 @@ import { reducers, metaReducers } from './store/reducers/index';
     ToastrModule.forRoot(),
     CheckboxModule,
     Ng2SearchPipeModule,
-    DropdownModule
+    DropdownModule,
+    CalendarModule
   ],
   providers: [
     AuthGuard,
