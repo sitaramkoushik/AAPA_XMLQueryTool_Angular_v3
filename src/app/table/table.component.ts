@@ -691,8 +691,9 @@ export class TableComponent implements OnInit {
 		let newParams = {
 			/* dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
 			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '', */
-			dateFrom:this.newStartDate? format(new Date(this.newStartDate),'MM/dd/yyyy HH:mm:ss'):'',
-			dateTo:this.newEndDate?format(new Date(this.newEndDate),'MM/dd/yyyy HH:mm:ss'):'',
+			dateFrom:this.newStartDate? format(new Date(this.newStartDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
+			dateTo:this.newEndDate?format(new Date(this.newEndDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
+
 		}
 
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }
