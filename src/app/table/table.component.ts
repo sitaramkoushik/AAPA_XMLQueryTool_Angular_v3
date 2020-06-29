@@ -15,7 +15,8 @@ import { cloneDeep } from "lodash";
 import { ToastrService } from 'ngx-toastr';
 import { Store } from '@ngrx/store';
 import * as fromStore from '../store/reducers/index';
-import {environment} from '../../environments/environment'
+import {environment} from '../../environments/environment';
+import { format,parse } from 'date-fns';
 declare var _:any
 const Swal = require('sweetalert2')
 
@@ -76,6 +77,8 @@ export class TableComponent implements OnInit {
 	today = new Date()
 	startDate: RequestDateInterface = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
 	endDate: RequestDateInterface = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
+	newStartDate:any;
+	newEndDate:any;
 	userName: String = ''
 	debounced = debounce(() => {
 		this.getMoreData()
@@ -126,6 +129,8 @@ export class TableComponent implements OnInit {
 		this.modelref.close();
 	}
 	ngOnInit() {
+		this.newStartDate=format(new Date(),"MM/dd/yyyy HH:mm:ss");
+		this.newEndDate=format(new Date(),"MM/dd/yyyy HH:mm:ss");
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 		this.tableData = environment.baseurl + '/advSearch',
 		this.reqResponse = environment.baseurl + '/xmlReqResp',
@@ -180,8 +185,10 @@ export class TableComponent implements OnInit {
 		this.selectedAction = '';
 		this.searchKey = ''
 		this.selectedValue = ''
-		this.startDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
-		this.endDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
+		/* this.startDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
+		this.endDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() } */
+		this.newStartDate= format(new Date(),'MM/dd/yyyy HH:mm:ss');
+		this.newEndDate=format(new Date(),'MM/dd/yyyy HH:mm:ss');
 		this.queryObj = cloneDeep(baseObject)
 		if(clearFilters){
 			this.getData();
@@ -283,8 +290,10 @@ export class TableComponent implements OnInit {
 		this.loadingIndicator = false
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 		let newParams = {
-			dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
-			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '',
+			/* dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
+			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '', */
+			dateFrom:this.newStartDate? format(new Date(this.newStartDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
+			dateTo:this.newEndDate?format(new Date(this.newEndDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
 			env : (this.place == "STAGING") ? "BETA" : this.place
 		}
 		if(this.queryObj.params.searchKey.indexOf("created:[")!=-1){
@@ -364,10 +373,10 @@ export class TableComponent implements OnInit {
 
 	 reSearch() {
 		this.loading = true
-		let fromDate:any = new Date(this.startDate.year, this.startDate.month-1, this.startDate.day)
-		let toDate:any = new Date(this.endDate.year, this.endDate.month-1, this.endDate.day)
-
-
+		/* let fromDate:any = new Date(this.startDate.year, this.startDate.month-1, this.startDate.day)
+		let toDate:any = new Date(this.endDate.year, this.endDate.month-1, this.endDate.day) */
+		let fromDate:any= format(new Date(this.newStartDate),'MM/dd/yyyy HH:mm:ss')
+		let toDate:any=format(new Date(this.newEndDate),'MM/dd/yyyy HH:mm:ss')
 		if(this.queryObj.params.searchKey.indexOf("created:[")==-1 && fromDate>toDate){
 			Swal.fire({ text: "From date should be less than to date", type: 'warning', showCloseButton: true, showConfirmButton: false });
 		}
@@ -675,8 +684,10 @@ export class TableComponent implements OnInit {
 		this.displayExportButton = false
 
 		let newParams = {
-			dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
-			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '',
+			/* dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
+			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '', */
+			dateFrom:this.newStartDate? format(new Date(this.newStartDate),'MM/dd/yyyy HH:mm:ss'):'',
+			dateTo:this.newEndDate?format(new Date(this.newEndDate),'MM/dd/yyyy HH:mm:ss'):'',
 		}
 
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }

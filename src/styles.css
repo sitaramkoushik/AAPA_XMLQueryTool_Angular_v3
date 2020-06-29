@@ -385,13 +385,14 @@ aes-xml-query {
 	font-size: 12px;
 	font-family: lato;
 	box-shadow: none;
-	max-width: 100px;
-	min-width: 100px;
-	background: url(./assets/images/calendar.svg) no-repeat right 5px top 8px;
+	min-width: 195px;
+	/* background: url(./assets/images/calendar.svg) no-repeat right 5px top 8px; */
+	background-color: transparent;
 	padding-left: 5px;
 	background-size: 15px 15px;
 	background-repeat: no-repeat;
 	text-transform: lowercase;
+	height: 32px;
 }
 
 .page-container .search-input-container {
