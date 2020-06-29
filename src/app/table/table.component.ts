@@ -129,10 +129,13 @@ export class TableComponent implements OnInit {
 		this.modelref.close();
 	}
 	ngOnInit() {
-		this.newStartDate=format(new Date(),"MM/dd/yyyy HH:mm:ss");
-		this.newEndDate=format(new Date(),"MM/dd/yyyy HH:mm:ss");
+		/* this.newStartDate=format(new Date(),"MM/dd/yyyy HH:mm:ss");
+		this.newEndDate=format(new Date(),"MM/dd/yyyy HH:mm:ss"); */
+		this.newStartDate=this.today.getMonth()+1+"/"+this.today.getDate()+"/"+this.today.getFullYear()+" "+"00:00:00";
+		this.newEndDate=this.today.getMonth()+1+"/"+this.today.getDate()+"/"+this.today.getFullYear()+" "+"23:59:59";
+
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
-		this.tableData = environment.baseurl + '/advSearch',
+		this.tableData = environment.baseurl +'/advSearch',
 		this.reqResponse = environment.baseurl + '/xmlReqResp',
 		this.reqXml = environment.baseurl + '/xmlreqresfromEs',
 		this.exportUrl = environment.baseurl + '/exportData',
@@ -187,8 +190,10 @@ export class TableComponent implements OnInit {
 		this.selectedValue = ''
 		/* this.startDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
 		this.endDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() } */
-		this.newStartDate= format(new Date(),'MM/dd/yyyy HH:mm:ss');
-		this.newEndDate=format(new Date(),'MM/dd/yyyy HH:mm:ss');
+		/* this.newStartDate= format(new Date(),'MM/dd/yyyy HH:mm:ss');
+		this.newEndDate=format(new Date(),'MM/dd/yyyy HH:mm:ss'); */
+		this.newStartDate=this.today.getMonth()+1+"/"+this.today.getDate()+"/"+this.today.getFullYear()+" "+"00:00:00";
+		this.newEndDate=this.today.getMonth()+1+"/"+this.today.getDate()+"/"+this.today.getFullYear()+" "+"23:59:59";
 		this.queryObj = cloneDeep(baseObject)
 		if(clearFilters){
 			this.getData();
