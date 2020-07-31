@@ -415,7 +415,7 @@ body .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected {
 	border-color: rgb(143, 137, 137);
 	height: 25px !important;
 	max-width: none;
-	min-width: 90px;
+	min-width: 115px;
 	min-height: 25px;
 	line-height: normal;
 }
