@@ -1,29 +1,24 @@
-import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core'
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core'
 import {
 	FormGroup,
 	FormBuilder,
 } from '@angular/forms'
 import { HttpClient, HttpParams } from '@angular/common/http'
 //import urls from '../routes/urls'
-import { signOut, merge, signOutFromCognito,decrypt } from '../helpers'
+import { signOut, merge } from '../helpers'
 import { debounce } from 'lodash'
 import { NgbModal, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap'
-import { allCols,wdNameData, allAvailableCols, baseObject, envData, queryTypeData, actionData, defaultRowData, BaseObjectInterface, RequestDateInterface,secretKey } from './data'
+import { allCols, allAvailableCols, baseObject, envData, queryTypeData, actionData, defaultRowData, BaseObjectInterface, RequestDateInterface } from './data'
 import { DatatableComponent } from "@swimlane/ngx-datatable";
 import { TreeNode } from 'primeng/api';
 import { cloneDeep } from "lodash";
 import { ToastrService } from 'ngx-toastr';
-import { LoginComponent } from "../login/login.component";
 import { Store } from '@ngrx/store';
 import * as fromStore from '../store/reducers/index';
-import * as xmlQueryToolAction from '../store/actions/xmlQueryTool.actions';
-import * as CryptoJS from 'crypto-js';
+import {environment} from '../../environments/environment';
+import { format,parse } from 'date-fns';
 declare var _:any
 const Swal = require('sweetalert2')
-
-// import Swal from 'sweetalert2'
-
-// CommonJS
 
 @Component({
 	selector: 'aes-xml-query',
@@ -32,14 +27,10 @@ const Swal = require('sweetalert2')
 })
 export class TableComponent implements OnInit {
 
-	@ViewChild('login') login: LoginComponent;
-
-
 	/**
 	 * data / objects
 	 */
 	exportStatus;
-	interval;
 	text = '';
 	value: number = 0;
 	public Tree: TreeNode[];
@@ -50,7 +41,6 @@ export class TableComponent implements OnInit {
 	searchValue: any;
 	searchOnchagneValues=''
 	eachRowData: any;
-	modalWidth:any="modalWidth"
 	public partNumberActive = 'active';
 	public lineCodeActive = '';
 	public searchKey = "partNumber";
@@ -87,9 +77,10 @@ export class TableComponent implements OnInit {
 	today = new Date()
 	startDate: RequestDateInterface = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
 	endDate: RequestDateInterface = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
+	newStartDate:any;
+	newEndDate:any;
 	userName: String = ''
 	debounced = debounce(() => {
-		console.log("debounce called")
 		this.getMoreData()
 	}, 300)
 	selectedColumnID = 0
@@ -108,8 +99,6 @@ export class TableComponent implements OnInit {
 	wdNames: string;
 	exportstatus: string;
 	disableButton:boolean =  false;
-	isEnvchahnged: boolean = false;
-	baseurl: any;
 	wdNameSelected: boolean = true;
 	modelref: any
 	originalData: any
@@ -124,8 +113,7 @@ export class TableComponent implements OnInit {
 		private toastr: ToastrService,
 		private ngbDatepickerConfig:NgbDatepickerConfig,
 		public store: Store<fromStore.State>
-//		private loginComponent: LoginComponent
-	) {
+			) {
 
 		ngbDatepickerConfig.firstDayOfWeek = 7;
 
@@ -141,80 +129,48 @@ export class TableComponent implements OnInit {
 		this.modelref.close();
 	}
 	ngOnInit() {
+		/* this.newStartDate=format(new Date(),"MM/dd/yyyy HH:mm:ss");
+		this.newEndDate=format(new Date(),"MM/dd/yyyy HH:mm:ss"); */
+		this.newStartDate=this.today.getMonth()+1+"/"+this.today.getDate()+"/"+this.today.getFullYear()+" "+"00:00:00";
+		this.newEndDate=this.today.getMonth()+1+"/"+this.today.getDate()+"/"+this.today.getFullYear()+" "+"23:59:59";
+
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
-		//this.loading = true;
-		this.updateUrls("PROD");
-		// this.login.getEnvProps("PROD");
+		this.tableData = environment.baseurl +'/advSearch',
+		this.reqResponse = environment.baseurl + '/xmlReqResp',
+		this.reqXml = environment.baseurl + '/xmlreqresfromEs',
+		this.exportUrl = environment.baseurl + '/exportData',
+		this.exportstatus = environment.baseurl + '/getStatus',
+		this.wdNames = environment.baseurl + '/getWdNames'
 		this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
 			if(res){
 				this.cognitoDetails = res;
 			}
 		})
-		let userName =decrypt(localStorage.getItem('uno'));
-		let password = decrypt(localStorage.getItem('unokey'));
-		let isEnvChange = localStorage.getItem('loggedInEnv');
-		//signOutFromCognito();
-		if(isEnvChange!="PROD"){
-			this.login.cognitoAwsAmplify("PROD","https://ms.myplace4parts.com/prod/xmlQueryTool",userName,password,false,this.queryObj);
-		}else{
-			this.getData();
-		}
-
+		this.getData();
 		this.registerScrollEvent()
 		this.getSelectedColumns()
 		let data = localStorage.getItem('autoFillQueryData')
 		this.autoFillQueryData = JSON.parse(data)
-		this.userName =decrypt(localStorage.getItem('uno'))
+		this.userName = localStorage.getItem('uno')
 		let timeFormat = localStorage.getItem('timeFormat')
 		if (timeFormat) {
 			this.timeFormat = timeFormat
 		}
-
-
 		this.getFormBuilder()
 		this.getTimeFormBuilder()
-		//this.getData()
 		this.closeFilters()
-	//	this.getWdnames()
-
-
 	}
 	signOut(){
 		signOut(this.cognitoDetails)
 	}
-
-
-	tablesData(res){
-		// this.rows = []
-		// 	this.rowCount = 0
-			this.rows = [...this.rows, ...res['data']]
-					this.rowCount = res['numResults']
-					//this.loading = false;
-					this.loadingIndicator = false
-					this.tableMessages.emptyMessage = `<div class="text-center">No Data Avaliable</div>`
-					if (res['data'].length) {
-						//this.checkIfScrollable()
-					}
-	}
-	displayErrorMsg(res){
-		//this.loading = data.isLoading
-		console.log(this.originalData)
-		this.rows = [...this.rows, ...this.originalData['data']]
-		this.rowCount = this.originalData['numResults']
-		this.disableButton = res['disablebuttons']
-		Swal.fire({ text: res.message, type: 'warning', showCloseButton: true, showConfirmButton: false });
-
-	}
-disableButtons(event){
-	this.disableButton = event
-}
-
 	openWdModal(wdModal) {
 			this.checkData=[];
 			this.newArray=[]
 			this.wdNamesData=[]
 			try{
-				this.http.get(this.wdNames).subscribe(res => {
+				let parameters = new HttpParams()
+			.set('env', this.queryObj.params.env)
+				this.http.get(this.wdNames,{params:parameters}).subscribe(res => {
 					if(res && res['statusCode']=='200'){
 						this.wdNamesService = res['result']
 					  this.wdNamesData = this.wdNamesService
@@ -229,19 +185,20 @@ disableButtons(event){
 
 
 	clearFilters(clearFilters=true) {
-	//	this.rows = []
-	//	this.rowCount = 0
 		this.selectedAction = '';
 		this.searchKey = ''
 		this.selectedValue = ''
-		this.startDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
-		this.endDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
+		/* this.startDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() }
+		this.endDate = { year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() } */
+		/* this.newStartDate= format(new Date(),'MM/dd/yyyy HH:mm:ss');
+		this.newEndDate=format(new Date(),'MM/dd/yyyy HH:mm:ss'); */
+		this.newStartDate=this.today.getMonth()+1+"/"+this.today.getDate()+"/"+this.today.getFullYear()+" "+"00:00:00";
+		this.newEndDate=this.today.getMonth()+1+"/"+this.today.getDate()+"/"+this.today.getFullYear()+" "+"23:59:59";
 		this.queryObj = cloneDeep(baseObject)
 		if(clearFilters){
 			this.getData();
 		}
 	}
-
 
 	getSelectedColumns() {
 		let items: any = localStorage.getItem('selectedColumns')
@@ -272,13 +229,14 @@ disableButtons(event){
 	}
 
 	registerScrollEvent() {
+		console.log("registerscrollevent")
 		let element: HTMLElement = document.querySelector(this.dataTabelBodySelector)
 		element.onscroll = () => {
 			let scrollBottom = element.scrollTop + element.clientHeight
 			//if (((element.scrollHeight / 3) * 2) <= scrollBottom) {
 				if (((element.scrollHeight / 3) * 2) < scrollBottom) {
-				console.log("registerScrollEvent")
-				this.debounced()
+					console.log("registerscroll in if")
+					this.debounced()
 			}
 		}
 	}
@@ -286,8 +244,7 @@ disableButtons(event){
 	checkIfScrollable() {
 		let element: HTMLElement = document.querySelector(this.dataTabelBodySelector)
 		if (element.scrollHeight === element.clientHeight && this.rowCount) {
-			console.log("checkIfScrollable")
-			this.debounced()
+			 this.debounced()
 		}
 	}
 
@@ -302,13 +259,10 @@ disableButtons(event){
 			this.stickyRef.nativeElement.classList.add("text-primary")
 		}
 		this.ishide = false
-		// this.ishide2 = false
 }
 	toggleFilters2(){
 		this.pageContainerRef.nativeElement.classList.remove("hide-search")
 		this.ishide = true
-		// this.ishide2 = true
-
 	}
 	toggleFilters3(){
 		if(this.ishide){
@@ -324,8 +278,6 @@ disableButtons(event){
 	closeFilters() {
 		this.stickyRef.nativeElement.classList.add("sticked")
 		this.stickyRef.nativeElement.classList.add("text-primary")
-
-		//this.pageContainerRef.nativeElement.classList.add("hide-search")
 	}
 
 	getMoreData() {
@@ -338,37 +290,24 @@ disableButtons(event){
 			timeOut: 4000
 		  });
 	}
-	updateUrls(env){
-			 if ( env == "STAGING") {
-				this.baseurl = "https://ms.myplace4parts.com/staging/xmlQueryTool"
-			  }else if (env == "PROD") {
-				this.baseurl = "https://ms.myplace4parts.com/prod/xmlQueryTool"
-			  }else if(env == "DEV") {
-				this.baseurl = "https://gsjhkvo2kf.execute-api.us-east-1.amazonaws.com/dev/xmlQueryTool"
-			  }
-		this.tableData = this.baseurl + '/advSearch',
-		this.reqResponse = this.baseurl + '/xmlReqResp',
-		this.reqXml = this.baseurl + '/xmlreqresfromEs',
-		this.exportUrl = this.baseurl + '/exportData',
-		this.exportstatus = this.baseurl + '/getStatus',
-		this.wdNames = this.baseurl + '/getWdNames'
-	}
 	getData() {
 
 		this.loadingIndicator = false
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
-		//this.loading = true
 		let newParams = {
-			dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
-			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '',
+			/* dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
+			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '', */
+			dateFrom:this.newStartDate? format(new Date(this.newStartDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
+			dateTo:this.newEndDate?format(new Date(this.newEndDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
+			env : (this.place == "STAGING") ? "BETA" : (this.place=="AWS_STAGING")?"AWSSTAGING":this.place
 		}
 		if(this.queryObj.params.searchKey.indexOf("created:[")!=-1){
 			newParams = {
 				dateFrom:'',
-				dateTo:''
-			}
+				dateTo:'',
+				env : this.place
+				}
 		}
-
 
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }
 		// @ts-ignore
@@ -378,18 +317,21 @@ disableButtons(event){
 
 			if (!res || !res['data']) {
 				this.disableButton = false;
-				//this.loading = false
 				alert('Something wrong')
 				return
 			}
 			this.originalData = _.cloneDeep(res)
-			this.tablesData(res);
-			//this.loading = false
+			this.rows = [...this.rows, ...res['data']]
+			this.rowCount = res['numResults']
+			this.loadingIndicator = false
+			this.tableMessages.emptyMessage = `<div class="text-center">No Data Avaliable</div>`
+			if (res['data'].length) {
+				// this.checkIfScrollable()
+			}
 
 		}, err => {
 			this.rows = []
 			this.disableButton = false;
-		//	this.loading = false
 			this.loadingIndicator = false
 			this.tableMessages.emptyMessage = '<div class="text-center">No Data Avaliable</div>'
 			if (err) {
@@ -415,17 +357,9 @@ disableButtons(event){
 			this.autoFillQueryData = newKeys
 		}
 	}
-	onDrop(event){
-		console.log("ondrop");
-	}
-	onActivate(event){
-		console.log("activated")
-	}
 	onReorder() {
 		setTimeout(() => {
 			let columns = this.xmlTableRef.headerComponent.columns
-			let newColumns = []
-			console.log(columns,"columns are")
 			columns = columns.map(item => {
 				if (item.name) {
 					return {
@@ -437,52 +371,27 @@ disableButtons(event){
 					return null
 				}
 			}).filter(item => item)
-			// columns.map(item =>{
-			// 	if(item.name){
-			// 		newColumns.push({'name': item.name,'width': item.width,'visible': true})
-			// 	}else{
-			// 		newColumns.unshift({'name': item.name,'width': item.width,'visible': true})
-			// 	}
-			// })
 			let finalArr = merge(columns, this.visibleColumns)
 			this.setSelectedColumns(finalArr)
 		})
 	}
 
 	 reSearch() {
-		// this.loading = true
-		let fromDate:any = new Date(this.startDate.year, this.startDate.month-1, this.startDate.day)
-		let toDate:any = new Date(this.endDate.year, this.endDate.month-1, this.endDate.day)
-
-
+		this.loading = true
+		/* let fromDate:any = new Date(this.startDate.year, this.startDate.month-1, this.startDate.day)
+		let toDate:any = new Date(this.endDate.year, this.endDate.month-1, this.endDate.day) */
+		let fromDate:any= format(new Date(this.newStartDate),'MM/dd/yyyy HH:mm:ss')
+		let toDate:any=format(new Date(this.newEndDate),'MM/dd/yyyy HH:mm:ss')
 		if(this.queryObj.params.searchKey.indexOf("created:[")==-1 && fromDate>toDate){
 			Swal.fire({ text: "From date should be less than to date", type: 'warning', showCloseButton: true, showConfirmButton: false });
 		}
 		else{
-			//this.queryObj.params.queryType = this.searchOnchagneValues
 			this.queryObj.params.start = 0
 			this.rows = []
 			this.rowCount = 0
 			this.disableButton = true;
 			this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
-			if(this.isEnvchahnged){
-			signOutFromCognito(this.cognitoDetails);
-			// this.login.getEnvProps(this.place)
-			this.updateUrls(this.place);
-			let userName =decrypt(localStorage.getItem('uno'));
-			let password =decrypt(localStorage.getItem('unokey'));
-			// this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
-			// 	if(res){
-			// 		console.log(res,"cognitoDetails");
-			// 	}
-			// })
-			//signOutFromCognito();
-			this.login.cognitoAwsAmplify(this.place,this.baseurl,userName,password,false,this.queryObj);
-			//this.getData()
-			}else{
-				this.getData()
-			}
-			this.isEnvchahnged = false;
+			this.getData()
 			this.closeFilters()
 		}
 	}
@@ -525,8 +434,6 @@ disableButtons(event){
 				this.getSelectedColumns()
 				this.getFormBuilder()
 				this.getTimeFormBuilder()
-			} else {
-				//
 			}
 		}).catch(err => {
 			console.log(err)
@@ -534,9 +441,7 @@ disableButtons(event){
 	}
 
 	dataOpen(data, content) {
-		console.log(data)
 		this.selectedColumnID = data
-
 		let row = this.rows.find((item) => item['id'] == data)
 		let rowKeys = Object.keys(row)
 		let newRow = []
@@ -545,7 +450,6 @@ disableButtons(event){
 			newRow.push(arr)
 		}
 		this.selectedColumnData = newRow
-		// let dataInfo[] = this.selectedColumnData;
 		this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', size: 'lg', windowClass: 'detailed-popup scrollable' })
 	}
 
@@ -553,21 +457,13 @@ disableButtons(event){
 		this.selectedColumnID = data
 		let row = this.rows.find((item) => item['id'] == data)
 		this.reqResp = {}
-		// let body: Object = {
-		// 	params: {
-		// 		id: row['id'],
-		// 		created: row['created'],
-		// 		server: row['server'],
-		// 		env: this.queryObj.params.env,
-		// 		ts: new Date().getTime()
-		// 	}
-		// }
 		let body: Object = {
 			params: {
 				id: row['id'],
 				created: row['created'],
 				server: row['server'],
-				ts: new Date().getTime()
+				ts: new Date().getTime(),
+				env : this.queryObj.params.env
 			}
 		}
 		this.http.get(this.reqResponse, body).subscribe(res => {
@@ -602,8 +498,8 @@ disableButtons(event){
 
 		let parameters = new HttpParams()
 			.set('activityDate', year + month)
-			.set('xmlActivityId', row['id']);
-			//.set('env', this.queryObj.params.env);
+			.set('xmlActivityId', row['id'])
+			.set('env', this.queryObj.params.env);
 		this.http.get(this.reqXml, { params: parameters }).subscribe(res => {
 
 			if (!res || !res['_source'] || res['StatusCode'] == 400) {
@@ -643,18 +539,15 @@ disableButtons(event){
 			let finalJsonData = this.buildJsonViewer(parentLabel, ele, expandAll)
 			testData.push(finalJsonData);
 		})
-
 		this.responseJSON = testData;
 	}
 
 	buildJsonViewer(parentLabel, childData, expanded = false) {
 		let children = [];
 		Object.keys(childData).forEach(element => {
-
 			if (element == "locations") {
 				var locationsObj = {};
 				let children = [];
-
 				childData[element].forEach(element => {
 					let Childern_childNodes = this.buildJsonViewer(element.called, element, expanded)
 					children.push(Childern_childNodes)
@@ -796,13 +689,16 @@ disableButtons(event){
 		this.displayExportButton = false
 
 		let newParams = {
-			dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
-			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '',
+			/* dateFrom: this.startDate ? `${this.startDate.month}/${this.startDate.day}/${this.startDate.year}` : '',
+			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '', */
+			dateFrom:this.newStartDate? format(new Date(this.newStartDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
+			dateTo:this.newEndDate?format(new Date(this.newEndDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
+
 		}
 
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }
 		let parameters = new HttpParams()
-		//.set('env', this.queryObj.params.env)
+		.set('env', this.queryObj.params.env)
 		.set('queryType', this.queryObj.params.queryType)
 		.set('searchKey', this.queryObj.params.searchKey)
 		.set('action', this.queryObj.params.action)
@@ -921,12 +817,10 @@ disableButtons(event){
 
 	onChangePlace(e){
 	   this.place = e.label
-	   this.isEnvchahnged = true
 	   this.clearFilters(false);
 	}
 
 	onChangeSelectedWd(e,name){
-         // this.checkData.map(item=>{
 				if(e == true){
 					this.checkData.push(name.label);
 				}else{
@@ -938,7 +832,6 @@ disableButtons(event){
 					this.checkData=[];
 					this.checkData=this.newArray;
 				}
-			// })
 	   }
 
 	submitWdname(){
@@ -953,7 +846,6 @@ disableButtons(event){
 		 this.modalService.dismissAll();
 		 this.checkData=[];
 		 this.wdNamesData=[]
-		//  this.queryTypeData=[];
 		this.wdNameSelected = true;
 	}
 

@@ -17,7 +17,7 @@ let baseObject: BaseObjectInterface = {
 	params: {
 		searchKey: '',
 		count: 20,
-
+		env: 'PROD',
 		queryType: '',
 		start: 0,
 		action: '',
@@ -30,6 +30,7 @@ let envData = [
 	{ value: 'BETA', label: 'STAGING' },
 	{ value: 'PROD', label: 'PROD' },
 	{ value: 'DEV', label: 'DEV' },
+	{value:'AWSSTAGING',label:'AWS_STAGING'}
 ]
 let queryTypeData = [
 	{ value: 'screenName', label: 'Screen Name' },
@@ -59,8 +60,6 @@ let actionData = [
 	{ value: 'RET', label: 'RET' },
 	{ value: 'RFQ', label: 'RFQ' },
 ]
- let secretKey = "xmlQueryTool";
-
 export {
 	allCols,
 	allAvailableCols,
@@ -69,8 +68,7 @@ export {
 	queryTypeData,
 	actionData,
 	defaultRowData,
-	wdNameData,
-	secretKey
+	wdNameData
 }
 
 export interface BaseObjectInterface {
@@ -80,6 +78,7 @@ export interface BaseObjectInterface {
 interface ParamsInterface {
 	searchKey: string
 	count: number
+	env: string,
 	queryType: string
 	start: number
 	action: string

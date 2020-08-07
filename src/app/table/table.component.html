@@ -20,8 +20,6 @@
             </div>
         </div>
 
-        <span *ngIf='loading' class="pi pi-spin pi-spinner"></span>
-
         <div class="header col-12 form-horizontal p-0" (mouseover)="toggleFilters3()" (mouseout)="toggleFilters4()">
             <div class="search-top">
                 <div class="d-flex justify-content-between align-items-center" >
@@ -117,8 +115,10 @@
                             <label class="col-sm-12 control-label  pl-2 pr-2">From Date</label>
                             <div class="">
                                 <div class="input-group date">
-                                    <input class="form-control" placeholder="MM/DD/YYYY" name="ds" [(ngModel)]="startDate" ngbDatepicker #ds="ngbDatepicker"
-                                        (focus)="ds.toggle()" >
+                                     <!-- <input class="form-control" placeholder="MM/DD/YYYY" name="ds" [(ngModel)]="startDate" ngbDatepicker #ds="ngbDatepicker"
+                                        (focus)="ds.toggle()" > -->
+
+                                        <p-calendar [(ngModel)]="newStartDate" [showIcon]="false" [showSeconds]="true" [showTime]="true" [inline]="false" placeholder="MM/DD/YYYY" [monthNavigator]="true"  [yearNavigator]="true" yearRange="2000:2030" [hideOnDateTimeSelect]="true"></p-calendar>
                                 </div>
                             </div>
                         </div>
@@ -128,8 +128,9 @@
                             <label class="col-sm-12 control-label  pl-2 pr-2">To Date</label>
                             <div class="">
                                 <div class="input-group date">
-                                    <input class="form-control" placeholder="MM/DD/YYYY" name="de" [(ngModel)]="endDate" ngbDatepicker #de="ngbDatepicker"
-                                        (focus)="de.toggle()">
+                                   <!--  <input class="form-control" placeholder="MM/DD/YYYY" name="de" [(ngModel)]="endDate" ngbDatepicker #de="ngbDatepicker"
+                                        (focus)="de.toggle()"> -->
+                                        <p-calendar [(ngModel)]="newEndDate" [showIcon]="false" [showSeconds]="true" [showTime]="true" [inline]="false" placeholder="MM/DD/YYYY" [monthNavigator]="true"  [yearNavigator]="true" yearRange="2000:2030" [hideOnDateTimeSelect]="true"></p-calendar>
                                 </div>
                             </div>
                         </div>
@@ -624,12 +625,12 @@
                     <span class="block-header font-weight-bold">Request</span>
                     <div class="mr-3">
 
-                            <button pButton type="button" label="Expand all" title="Expand all" (click)="resquest_expandAll()" class="mr-2 bg-transparent btn p-0">
+                            <button  type="button"  title="Expand all" (click)="resquest_expandAll()" class="mr-2 bg-transparent btn p-0">
                                 <i class="fa fa-caret-down" aria-hidden="true"></i>
                             </button>
 
 
-                            <button pButton type="button" label="Collapse all" title="Collapse all" (click)="resquest_collapseAll()" class="bg-transparent btn p-0">
+                            <button  type="button"  title="Collapse all" (click)="resquest_collapseAll()" class="bg-transparent btn p-0">
                                     <i class="fa fa-caret-up" aria-hidden="true"></i>
                             </button>
 
@@ -655,13 +656,13 @@
                     <span class="block-header font-weight-bold">Response</span>
                         <div class="mr-3">
 
-                                        <button pButton type="button" label="Expand all" title="Expand all" (click)="response_expandAll()" class="mr-2 bg-transparent btn p-0">
+                                        <button  type="button"  title="Expand all" (click)="response_expandAll()" class="mr-2 bg-transparent btn p-0">
                                             <i class="fa fa-caret-down" aria-hidden="true"></i>
                                         </button>
 
 
 
-                                    <button pButton type="button" label="Collapse all" title="Collapse all" (click)="response_collapseAll()" class="mr-2 bg-transparent btn p-0">
+                                    <button  type="button"  title="Collapse all" (click)="response_collapseAll()" class="mr-2 bg-transparent btn p-0">
                                         <i class="fa fa-caret-up" aria-hidden="true"></i>
                                     </button>
 
@@ -685,11 +686,3 @@
     </div>
 </ng-template>
 
-<!-- reqresp Modal end -->
-<div style="display:none;">
-<login #login
-(tablesData)= "tablesData($event)"
-(disableButtons)="disableButtons($event)"
-(dataMessage)="displayErrorMsg($event)"
-></login>
-</div>
