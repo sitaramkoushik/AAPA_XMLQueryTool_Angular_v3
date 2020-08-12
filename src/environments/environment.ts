@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
     login : "https://ms.myplace4parts.com/prod/xmlQueryTool/userLogin",
-    baseurl: "https://ms.myplace4parts.com/prod/xmlQueryTool"
+    baseurl: "https://ms.myplace4parts.com/prod/xmlQueryTool/1.0"
 };
 
 /*
