@@ -16,10 +16,10 @@ let today = new Date()
 let baseObject: BaseObjectInterface = {
 	params: {
 		searchKey: '',
-		count: 20,
+		pageSize: 20,
 		env: 'PROD',
 		queryType: '',
-		start: 0,
+		pageNo: 0,
 		action: '',
 		dateFrom: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`,
 		dateTo: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`,
@@ -77,10 +77,10 @@ export interface BaseObjectInterface {
 
 interface ParamsInterface {
 	searchKey: string
-	count: number
+	pageSize: number
 	env: string,
 	queryType: string
-	start: number
+	pageNo: number
 	action: string
 	dateFrom: string
 	dateTo: string

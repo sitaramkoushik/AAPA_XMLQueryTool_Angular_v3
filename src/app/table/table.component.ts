@@ -281,7 +281,7 @@ export class TableComponent implements OnInit {
 	}
 
 	getMoreData() {
-		this.queryObj.params.start += 1
+		this.queryObj.params.pageNo += 1
 		this.getData()
 	}
 
@@ -312,7 +312,7 @@ export class TableComponent implements OnInit {
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }
 		// @ts-ignore
 
-		this.http.get(this.tableData, this.queryObj).subscribe(res => {
+		this.http.post(this.tableData, this.queryObj.params).subscribe(res => {
 			this.loadingIndicator = false
 
 			if (!res || !res['data']) {
@@ -335,8 +335,8 @@ export class TableComponent implements OnInit {
 			this.loadingIndicator = false
 			this.tableMessages.emptyMessage = '<div class="text-center">No Data Avaliable</div>'
 			if (err) {
-				if (this.queryObj.params.start > 0) {
-					this.queryObj.params.start -= 1
+				if (this.queryObj.params.pageNo > 0) {
+					this.queryObj.params.pageNo -= 1
 				}
 			}
 			err.name == 'TimeoutError' ? this.timeOutError('Request TimeOut') : false;
@@ -386,7 +386,7 @@ export class TableComponent implements OnInit {
 			Swal.fire({ text: "From date should be less than to date", type: 'warning', showCloseButton: true, showConfirmButton: false });
 		}
 		else{
-			this.queryObj.params.start = 0
+			this.queryObj.params.pageNo = 0
 			this.rows = []
 			this.rowCount = 0
 			this.disableButton = true;
