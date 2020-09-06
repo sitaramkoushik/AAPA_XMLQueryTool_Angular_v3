@@ -38,7 +38,9 @@ export class AuthInterceptor implements HttpInterceptor {
     let idToken
        if(!req.url.includes("amazonaws.com")){
         let userName = localStorage.getItem('uno');
-         idToken = "CognitoIdentityServiceProvider."+this.cognitoDetails.clientId+"."+userName+".idToken"
+        let key = "CognitoIdentityServiceProvider."+this.cognitoDetails.clientId+".LastAuthUser";
+        let LastAuthUserValue = localStorage.getItem(key);
+         idToken = "CognitoIdentityServiceProvider."+this.cognitoDetails.clientId+"."+LastAuthUserValue+".idToken"
         authHeader = (localStorage.getItem(idToken))!=null?localStorage.getItem(idToken):'' ;
         console.log("authhe",authHeader);
     if(authHeader!=null){
