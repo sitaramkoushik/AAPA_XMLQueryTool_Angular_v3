@@ -17,10 +17,10 @@ export class AppComponent {
   constructor(public store: Store<fromStore.State>) { }
 
   ngOnInit() {
-      this.UserPoolId = 'us-east-1_nMzI8o7iu'
-      this.ClientId = '5r283s0pt9cl41vc0v1mrj0bb2'
+      this.UserPoolId = 'us-east-1_WPhcg35bJ'
+      this.ClientId = '65arl0n1r50mhlfbevgrd1c7qu'
       this.regionId = 'us-east-1'
-      this.IdentityPoolId = 'us-east-1:34dfed7e-1ec4-443c-bd23-c308aed829c0'
+      this.IdentityPoolId = 'us-east-1:e22a23c9-0f34-42fd-ad6f-a548649f8c06'
       this.cognitoDetails = {
         userPoolId:this.UserPoolId,
         regionId:this.regionId,
