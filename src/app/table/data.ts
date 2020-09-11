@@ -30,7 +30,6 @@ let envData = [
 	{ value: 'BETA', label: 'STAGING' },
 	{ value: 'PROD', label: 'PROD' },
 	{ value: 'DEV', label: 'DEV' },
-	{value:'AWSSTAGING',label:'AWS_STAGING'}
 ]
 let queryTypeData = [
 	{ value: 'screenName', label: 'Screen Name' },
