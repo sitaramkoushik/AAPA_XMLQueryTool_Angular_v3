@@ -742,7 +742,7 @@ export class TableComponent implements OnInit {
 					this.text = ''
 					this.value = 0;
 					clearInterval(interval);
-					this.timeOutError('Something went worng,Please try again...');
+					this.timeOutError('Something went wrong,Please try again...');
 				}
 			})
 
@@ -766,7 +766,7 @@ export class TableComponent implements OnInit {
 					this.text = ''
 					this.value = 0;
 					clearInterval(interval);
-					this.timeOutError('Something went worng,Please try again...');
+					this.timeOutError('Something went wrong,Please try again...');
 				}
 			});
 		}, 2000);
