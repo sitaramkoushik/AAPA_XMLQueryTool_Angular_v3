@@ -382,7 +382,7 @@ export class TableComponent implements OnInit {
 		let toDate:any = new Date(this.endDate.year, this.endDate.month-1, this.endDate.day) */
 		let fromDate:any= format(new Date(this.newStartDate),'MM/dd/yyyy HH:mm:ss')
 		let toDate:any=format(new Date(this.newEndDate),'MM/dd/yyyy HH:mm:ss')
-		if(this.queryObj.params.searchKey.indexOf("created:[")==-1 && fromDate>toDate){
+		if(this.queryObj.params.searchKey.indexOf("created:[")==-1 && new Date(fromDate) > new Date(this.newEndDate)){
 			Swal.fire({ text: "From date should be less than to date", type: 'warning', showCloseButton: true, showConfirmButton: false });
 		}
 		else{
