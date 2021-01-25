@@ -52,7 +52,7 @@
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/js-cookie": "^2.2.0",
-    "@types/lodash": "^4.14.116",
+    "@types/lodash": "4.14.116",
     "@types/node": "~10.11.0",
     "awesome-typescript-loader": "^3.0.4",
     "codelyzer": "~4.4.4",
@@ -68,7 +68,7 @@
     "ts-node": "~7.0.1",
     "tslint": "~5.11.0",
     "sweetalert2": "^7.33.1",
-    "typescript": "~2.9.2",
+    "typescript": "2.8",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
   }
