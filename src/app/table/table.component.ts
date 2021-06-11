@@ -103,6 +103,7 @@ export class TableComponent implements OnInit {
 	modelref: any
 	originalData: any
 	loading:boolean = false;
+	setUrl: string = environment.baseurl;
 	/**
 	 * Methods
 	 */
@@ -135,12 +136,15 @@ export class TableComponent implements OnInit {
 		this.newEndDate=this.today.getMonth()+1+"/"+this.today.getDate()+"/"+this.today.getFullYear()+" "+"23:59:59";
 
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
-		this.tableData = environment.baseurl +'/advSearch',
-		this.reqResponse = environment.baseurl + '/xmlReqResp',
-		this.reqXml = environment.baseurl + '/xmlreqresfromEs',
-		this.exportUrl = environment.baseurl + '/exportData',
-		this.exportstatus = environment.baseurl + '/getStatus',
-		this.wdNames = environment.baseurl + '/getWdNames'
+		if(this.place == 'STAGING') {
+			this.setUrl = environment.stagingurl;
+		}
+		this.tableData = this.setUrl +'/advSearch',
+		this.reqResponse = this.setUrl + '/xmlReqResp',
+		this.reqXml = this.setUrl + '/xmlreqresfromEs',
+		this.exportUrl = this.setUrl + '/exportData',
+		this.exportstatus = this.setUrl + '/getStatus',
+		this.wdNames = this.setUrl + '/getWdNames'
 		this.store.select(fromStore.getCognitoDetails).subscribe((res) => {
 			if(res){
 				this.cognitoDetails = res;
@@ -817,7 +821,8 @@ export class TableComponent implements OnInit {
 
 	onChangePlace(e){
 	   this.place = e.label
-	   this.clearFilters(false);
+	   //this.clearFilters(false);
+	   this.ngOnInit();
 	}
 
 	onChangeSelectedWd(e,name){
