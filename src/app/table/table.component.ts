@@ -138,6 +138,8 @@ export class TableComponent implements OnInit {
 		this.tableMessages.emptyMessage = `<div class="text-center">Loading...</div>`
 		if(this.place == 'STAGING') {
 			this.setUrl = environment.stagingurl;
+		} else {
+			this.setUrl = environment.baseurl;
 		}
 		this.tableData = this.setUrl +'/advSearch',
 		this.reqResponse = this.setUrl + '/xmlReqResp',
