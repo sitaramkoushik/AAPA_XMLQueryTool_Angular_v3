@@ -27,9 +27,9 @@ let baseObject: BaseObjectInterface = {
 	}
 }
 let envData = [
-	{ value: 'BETA', label: 'STAGING' },
 	{ value: 'PROD', label: 'PROD' },
-	{ value: 'DEV', label: 'DEV' },
+	{ value: 'BETA', label: 'STAGING' },
+	{ value: 'QA', label: 'QA' },
 ]
 let queryTypeData = [
 	{ value: 'screenName', label: 'Screen Name' },
