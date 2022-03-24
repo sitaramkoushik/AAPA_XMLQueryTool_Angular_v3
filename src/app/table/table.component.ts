@@ -713,7 +713,8 @@ export class TableComponent implements OnInit {
 		.set('action', this.queryObj.params.action)
 		.set('headers', (this.optradio==1)?allAvailableCols.toString():displayedColumns.toString())
 		.set('dateFrom', this.queryObj.params.dateFrom)
-		.set('dateTo',this.queryObj.params.dateTo);
+		.set('dateTo',this.queryObj.params.dateTo)
+		.set('timeZone',this.queryObj.params.timeZone);
 		this.http.get(this.exportUrl, { params: parameters }).subscribe(res => {
 		});
 
