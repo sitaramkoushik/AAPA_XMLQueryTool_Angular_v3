@@ -1,8 +1,3 @@
- import * as moment from 'moment-timezone'
-
-//import moment = require("moment-timezone");
-
-
 let allCols: Array<String> = ['id', 'trans', 'action', 'seqno', 'network', 'orgId',
 	'userid', 'screenName', 'created', 'duration', 'ordamt', 'coreAmt', 'linecnt',
 	'errFlg', 'sellDirect', 'service'
@@ -17,7 +12,6 @@ let allAvailableCols: Array<string> = ['action', 'created', 'destcalled', 'destn
 let defaultRowData = [{ "name": "action", "width": 51.520476287400776, "visible": true }, { "name": "created", "width": 84, "visible": true }, { "name": "errFlg", "width": 55.15577040504783, "visible": true }, { "name": "duration", "width": 69.15577040504783, "visible": true }, { "name": "id", "width": 74, "visible": true }, { "name": "linecnt", "width": 60.2000629128657, "visible": true }, { "name": "network", "width": 65.20006291286569, "visible": true }, { "name": "ordamt", "width": 62.2000629128657, "visible": true }, { "name": "orgId", "width": 65.20006291286569, "visible": true }, { "name": "coreAmt", "width": 71.20006291286569, "visible": true }, { "name": "screenName", "width": 109.20006291286569, "visible": true }, { "name": "sellDirect", "width": 67.20006291286569, "visible": true }, { "name": "seqno", "width": 73.19712173639516, "visible": true }, { "name": "service", "width": 78.19712173639515, "visible": true }, { "name": "trans", "width": 101, "visible": true }, { "name": "userid", "width": 110.39718464926068, "visible": true }, { "name": "destcalled", "width": 150, "visible": false }, { "name": "destname", "width": 150, "visible": false }, { "name": "laborFlg", "width": 150, "visible": false }, { "name": "natAcct", "width": 150, "visible": false }, { "name": "netamt", "width": 150, "visible": false }, { "name": "oeFlg", "width": 150, "visible": false }, { "name": "orgCity", "width": 150, "visible": false }, { "name": "orgCountry", "width": 150, "visible": false }, { "name": "orgName", "width": 150, "visible": false }, { "name": "orgRegion", "width": 150, "visible": false }, { "name": "orgTreePath", "width": 150, "visible": false }, { "name": "orgtype", "width": 150, "visible": false }, { "name": "orgZip", "width": 150, "visible": false }, { "name": "partnerName", "width": 150, "visible": false }, { "name": "partnerSellerId", "width": 150, "visible": false }, { "name": "partnerSellerIdCol", "width": 150, "visible": false }, { "name": "scat", "width": 150, "visible": false }, { "name": "scatName", "width": 150, "visible": false }, { "name": "server", "width": 150, "visible": false }, { "name": "sindex", "width": 150, "visible": false }, { "name": "sindexName", "width": 150, "visible": false }, { "name": "stype", "width": 150, "visible": false }, { "name": "url", "width": 150, "visible": false }, { "name": "wdName", "width": 150, "visible": false }]
 
 let today = new Date();
-var mmt = moment(new Date().toISOString());
 //env: 'PROD',
 let baseObject: BaseObjectInterface = {
 	params: {
@@ -30,7 +24,7 @@ let baseObject: BaseObjectInterface = {
 		dateFrom: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`,
 		dateTo: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`,
 		ts: new Date().getTime(),
-		timeZone: mmt.tz(Intl.DateTimeFormat().resolvedOptions().timeZone).format('ha z').split(' ')[1]
+		timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
 	}
 }
 let envData = [
