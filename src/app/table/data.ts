@@ -23,8 +23,7 @@ let baseObject: BaseObjectInterface = {
 		action: '',
 		dateFrom: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`,
 		dateTo: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`,
-		ts: new Date().getTime(),
-		timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+		ts: new Date().getTime()
 	}
 }
 let envData = [
@@ -84,9 +83,7 @@ interface ParamsInterface {
 	action: string
 	dateFrom: string
 	dateTo: string
-	ts: number,
-	timeZone: string
-
+	ts: number
 }
 
 export interface RequestDateInterface {
