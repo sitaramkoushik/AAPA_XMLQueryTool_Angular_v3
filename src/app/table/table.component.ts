@@ -712,8 +712,8 @@ export class TableComponent implements OnInit {
 		.set('searchKey', this.queryObj.params.searchKey)
 		.set('action', this.queryObj.params.action)
 		.set('headers', (this.optradio==1)?allAvailableCols.toString():displayedColumns.toString())
-		.set('dateFrom', this.queryObj.params.dateFrom)
-		.set('dateTo',this.queryObj.params.dateTo)
+		.set('dateFrom', format(new Date(new Date(this.queryObj.params.dateFrom).getTime()+(new Date().getTimezoneOffset())*60*1000), "yyyy-MM-dd'T'HH:mm:ss"))
+		.set('dateTo',format(new Date(new Date(this.queryObj.params.dateTo).getTime()+(new Date().getTimezoneOffset())*60*1000), "yyyy-MM-dd'T'HH:mm:ss"))
 		.set('timeZone',new Date().getTimezoneOffset().toString());
 		this.http.get(this.exportUrl, { params: parameters }).subscribe(res => {
 		});
