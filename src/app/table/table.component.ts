@@ -310,12 +310,17 @@ export class TableComponent implements OnInit {
 			dateTo:this.newEndDate?format(new Date(this.newEndDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
 			env : (this.place == "STAGING") ? "BETA" : this.place
 		}
+
 		if(this.queryObj.params.searchKey.indexOf("created:[")!=-1){
 			newParams = {
 				dateFrom:'',
 				dateTo:'',
 				env : this.place
 				}
+		}
+		if(localStorage.getItem('timeFormat') == "browserTime") {
+			newParams.dateFrom = format(new Date(new Date(newParams.dateFrom).getTime()+(new Date().getTimezoneOffset())*60*1000), "yyyy-MM-dd'T'HH:mm:ss")
+			newParams.dateTo = format(new Date(new Date(newParams.dateTo).getTime()+(new Date().getTimezoneOffset())*60*1000), "yyyy-MM-dd'T'HH:mm:ss")
 		}
 
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }
@@ -403,6 +408,10 @@ export class TableComponent implements OnInit {
 			this.getData()
 			this.closeFilters()
 		}
+	}
+
+	reloadData() {
+		setTimeout(()=>{this.reSearch()},10)
 	}
 
 	onActionChange(data) {
