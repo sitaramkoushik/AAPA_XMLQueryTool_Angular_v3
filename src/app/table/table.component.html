@@ -470,8 +470,8 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="theme-btn1 mr-2" (click)="c('save')">Save</button>
-        <button type="button" class="theme-btn mr-2" (click)="c('reset')">Reset</button>
+        <button type="button" class="theme-btn1 mr-2" (click)="c('save');reloadData()">Save</button>
+        <button type="button" class="theme-btn mr-2" (click)="c('reset');reloadData()">Reset</button>
         <button type="button" class="theme-btn" (click)="c('cancel')">Cancel</button>
     </div>
 </ng-template>
