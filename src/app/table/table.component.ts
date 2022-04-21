@@ -727,7 +727,7 @@ export class TableComponent implements OnInit {
 		.set('headers', (this.optradio==1)?allAvailableCols.toString():displayedColumns.toString())
 		.set('dateFrom', this.queryObj.params.dateFrom)
 		.set('dateTo', this.queryObj.params.dateTo)
-		.set('timeZone',new Date().getTimezoneOffset().toString());
+		.set('timeZone',localStorage.getItem('timeFormat') == "browserTime"? new Date().getTimezoneOffset().toString(): '0');
 
 		this.http.get(this.exportUrl, { params: parameters }).subscribe(res => {
 		});
