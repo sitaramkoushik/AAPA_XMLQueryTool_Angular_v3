@@ -713,6 +713,10 @@ export class TableComponent implements OnInit {
 			dateTo:this.newEndDate?format(new Date(this.newEndDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
 
 		}
+		if(localStorage.getItem('timeFormat') == "browserTime") {
+			newParams.dateFrom = format(new Date(new Date(newParams.dateFrom).getTime()+(new Date().getTimezoneOffset())*60*1000), "yyyy-MM-dd'T'HH:mm:ss")
+			newParams.dateTo = format(new Date(new Date(newParams.dateTo).getTime()+(new Date().getTimezoneOffset())*60*1000), "yyyy-MM-dd'T'HH:mm:ss")
+		}
 
 		this.queryObj.params = { ...this.queryObj.params, ...newParams }
 		let parameters = new HttpParams()
@@ -721,9 +725,10 @@ export class TableComponent implements OnInit {
 		.set('searchKey', this.queryObj.params.searchKey)
 		.set('action', this.queryObj.params.action)
 		.set('headers', (this.optradio==1)?allAvailableCols.toString():displayedColumns.toString())
-		.set('dateFrom', format(new Date(new Date(this.queryObj.params.dateFrom).getTime()+(new Date().getTimezoneOffset())*60*1000), "yyyy-MM-dd'T'HH:mm:ss"))
-		.set('dateTo',format(new Date(new Date(this.queryObj.params.dateTo).getTime()+(new Date().getTimezoneOffset())*60*1000), "yyyy-MM-dd'T'HH:mm:ss"))
+		.set('dateFrom', this.queryObj.params.dateFrom)
+		.set('dateTo', this.queryObj.params.dateTo)
 		.set('timeZone',new Date().getTimezoneOffset().toString());
+
 		this.http.get(this.exportUrl, { params: parameters }).subscribe(res => {
 		});
 
