@@ -28,6 +28,7 @@ let baseObject: BaseObjectInterface = {
 }
 let envData = [
 	{ value: 'PROD', label: 'PROD' },
+	{ value: 'PROD', label: 'PROD-DXP' },
 	{ value: 'BETA', label: 'STAGING' },
 	{ value: 'QA', label: 'QA' },
 ]

@@ -140,7 +140,9 @@ export class TableComponent implements OnInit {
 			this.setUrl = environment.stagingurl;
 		} else if(this.place == 'QA') {
 			this.setUrl = environment.qaurl;
-		} else {
+		} else if(this.place == 'PROD-DXP'){
+            this.setUrl = environment.prodDxp;
+        } else {
 			this.setUrl = environment.baseurl;
 		}
 		console.log(this.setUrl);
@@ -308,7 +310,7 @@ export class TableComponent implements OnInit {
 			dateTo: this.endDate ? `${this.endDate.month}/${this.endDate.day}/${this.endDate.year}` : '', */
 			dateFrom:this.newStartDate? format(new Date(this.newStartDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
 			dateTo:this.newEndDate?format(new Date(this.newEndDate),"yyyy-MM-dd'T'HH:mm:ss"):'',
-			env : (this.place == "STAGING") ? "BETA" : this.place
+			env : (this.place == "STAGING") ? "BETA" : (this.place == "PROD-DXP")?'PROD':this.place
 		}
 
 		if(this.queryObj.params.searchKey.indexOf("created:[")!=-1){
